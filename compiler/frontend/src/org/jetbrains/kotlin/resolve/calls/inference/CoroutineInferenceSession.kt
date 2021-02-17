@@ -119,14 +119,18 @@ class CoroutineInferenceSession(
         val resultingDescriptor = callInfo.resolvedCall.resultingDescriptor
 
         // This check is similar to one for old inference, see getCoroutineInferenceData() function
-        val checkCall = resultingDescriptor is LocalVariableDescriptor || anyReceiverContainStubType(resultingDescriptor)
+        val checkCall = resultingDescriptor is LocalVariableDescriptor || anyReceiverOrArgumentsContainStubType(resultingDescriptor)
 
         if (!checkCall) return
+
+        val resolvedCall = callInfo.resolvedCall
+        val resolvedCallAtom = if (resolvedCall is NewResolvedCallImpl<*>) resolvedCall.resolvedCallAtom else null
 
         val isApplicableCall =
             callComponents.statelessCallbacks.isApplicableCallForBuilderInference(
                 resultingDescriptor,
-                callComponents.languageVersionSettings
+                callComponents.languageVersionSettings,
+                resolvedCallAtom
             )
 
         if (!isApplicableCall) {
@@ -134,9 +138,10 @@ class CoroutineInferenceSession(
         }
     }
 
-    private fun anyReceiverContainStubType(descriptor: CallableDescriptor): Boolean {
+    private fun anyReceiverOrArgumentsContainStubType(descriptor: CallableDescriptor): Boolean {
         return descriptor.dispatchReceiverParameter?.type?.contains { it is StubType } == true ||
-                descriptor.extensionReceiverParameter?.type?.contains { it is StubType } == true
+                descriptor.extensionReceiverParameter?.type?.contains { it is StubType } == true ||
+                descriptor.valueParameters.any { valueParameter -> valueParameter.type.contains { it is StubType } }
     }
 
     fun hasInapplicableCall(): Boolean = hasInapplicableCall
