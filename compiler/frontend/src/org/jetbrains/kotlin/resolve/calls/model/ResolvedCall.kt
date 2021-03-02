@@ -52,3 +52,9 @@ interface ResolvedCall<D : CallableDescriptor> : ResolvedCallMarker {
     val dataFlowInfoForArguments: DataFlowInfoForArguments
     val smartCastDispatchReceiverType: KotlinType?
 }
+
+val ResolvedCallMarker.resultingDescriptor: CallableDescriptor
+    get() {
+        require(this is ResolvedCall<*>)
+        return this.resultingDescriptor
+    }
