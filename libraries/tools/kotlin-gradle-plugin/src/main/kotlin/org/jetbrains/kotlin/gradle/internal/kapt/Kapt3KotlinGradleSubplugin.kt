@@ -78,6 +78,8 @@ class Kapt3GradleSubplugin @Inject internal constructor(private val registry: To
 
         private val KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
 
+        private val CLASSLOADERS_CACHE_SIZE = "kapt.classloaders.cache.size"
+
         val MAIN_KAPT_CONFIGURATION_NAME = "kapt"
 
         const val KAPT_ARTIFACT_NAME = "kotlin-annotation-processing-gradle"
@@ -117,6 +119,8 @@ class Kapt3GradleSubplugin @Inject internal constructor(private val registry: To
         fun Project.isKaptKeepKdocCommentsInStubs(): Boolean {
             return getBooleanOptionValue(BooleanOption.KAPT_KEEP_KDOC_COMMENTS_IN_STUBS)
         }
+
+        fun Project.classLoadersCacheSize(): Int = findProperty(CLASSLOADERS_CACHE_SIZE)?.toString()?.toInt() ?: 0
 
         fun findMainKaptConfiguration(project: Project) = project.findKaptConfiguration(SourceSet.MAIN_SOURCE_SET_NAME)
 
@@ -569,6 +573,7 @@ class Kapt3GradleSubplugin @Inject internal constructor(private val registry: To
                 it.mapDiagnosticLocations = kaptExtension.mapDiagnosticLocations
                 it.annotationProcessorFqNames = kaptExtension.processors.split(',').filter { it.isNotEmpty() }
                 it.javacOptions = dslJavacOptions.get()
+                it.classLoadersCacheSize = project.classLoadersCacheSize()
             }
 
             val subpluginOptions = getKaptApOptions()
