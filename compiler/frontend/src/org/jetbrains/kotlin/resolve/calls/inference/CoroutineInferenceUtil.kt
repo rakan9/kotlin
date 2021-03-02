@@ -309,8 +309,9 @@ fun ResolvedAtom.areThereLambdasWithStubTypeInParameterOrReceiver(): Boolean {
         areThereParametersOfStubType || isReceiverOfStubType || atom.areThereLambdasWithStubTypeInParameterOrReceiver()
     }
 }
-fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersionSettings, resolvedCall: ResolvedCallMarker?): Boolean {
-    val descriptor = resolvedCall?.resultingDescriptor ?: return true
+
+fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersionSettings, resolvedCall: ResolvedCallMarker): Boolean {
+    val descriptor = resolvedCall.resultingDescriptor
 
     if (!languageVersionSettings.supportsFeature(LanguageFeature.ExperimentalBuilderInference)) {
         return isGoodCallForOldCoroutines(descriptor)

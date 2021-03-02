@@ -94,7 +94,7 @@ class KotlinResolutionStatelessCallbacksImpl(
 
     override fun isApplicableCallForBuilderInference(
         languageVersionSettings: LanguageVersionSettings,
-        resolvedCall: ResolvedCallMarker?
+        resolvedCall: ResolvedCallMarker
     ) = org.jetbrains.kotlin.resolve.calls.inference.isApplicableCallForBuilderInference(languageVersionSettings, resolvedCall)
 
     override fun isOldIntersectionIsEmpty(types: Collection<KotlinType>): Boolean {

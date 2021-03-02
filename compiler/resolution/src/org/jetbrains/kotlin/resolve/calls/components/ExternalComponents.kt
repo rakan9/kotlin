@@ -39,7 +39,7 @@ interface KotlinResolutionStatelessCallbacks {
     fun getScopeTowerForCallableReferenceArgument(argument: CallableReferenceKotlinCallArgument): ImplicitScopeTower
     fun getVariableCandidateIfInvoke(functionCall: KotlinCall): KotlinResolutionCandidate?
     fun isCoroutineCall(argument: KotlinCallArgument, parameter: ValueParameterDescriptor): Boolean
-    fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersionSettings, resolvedCall: ResolvedCallMarker?): Boolean
+    fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersionSettings, resolvedCall: ResolvedCallMarker): Boolean
 
     fun isOldIntersectionIsEmpty(types: Collection<KotlinType>): Boolean
 
