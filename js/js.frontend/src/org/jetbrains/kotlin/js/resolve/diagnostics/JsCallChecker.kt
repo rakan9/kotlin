@@ -48,19 +48,18 @@ import org.jetbrains.kotlin.resolve.constants.TypedCompileTimeConstant
 import org.jetbrains.kotlin.resolve.constants.evaluate.ConstantExpressionEvaluator
 import org.jetbrains.kotlin.types.TypeUtils
 
-class JsCallChecker(
-        private val constantExpressionEvaluator: ConstantExpressionEvaluator
-) : CallChecker {
-
+class JsCallChecker(private val constantExpressionEvaluator: ConstantExpressionEvaluator) : CallChecker {
     companion object {
         private val JS_PATTERN: DescriptorPredicate = PatternBuilder.pattern("kotlin.js.js(String)")
 
-        @JvmStatic fun <F : CallableDescriptor> ResolvedCall<F>.isJsCall(): Boolean {
+        @JvmStatic
+        fun <F : CallableDescriptor> ResolvedCall<F>.isJsCall(): Boolean {
             val descriptor = resultingDescriptor
             return descriptor is SimpleFunctionDescriptor && JS_PATTERN.test(descriptor)
         }
 
-        @JvmStatic fun extractStringValue(compileTimeConstant: CompileTimeConstant<*>?): String? {
+        @JvmStatic
+        fun extractStringValue(compileTimeConstant: CompileTimeConstant<*>?): String? {
             return ((compileTimeConstant as? TypedCompileTimeConstant<*>)?.constantValue as? StringValue)?.value
         }
     }
@@ -91,7 +90,8 @@ class JsCallChecker(
         try {
             val parserScope = JsFunctionScope(JsRootScope(JsProgram()), "<js fun>")
             val statements = parseExpressionOrStatement(
-                    code, errorReporter, parserScope, CodePosition(0, 0), reportOn.containingFile?.name ?: "<unknown file>")
+                code, errorReporter, parserScope, CodePosition(0, 0), reportOn.containingFile?.name ?: "<unknown file>"
+            )
 
             if (statements == null || statements.isEmpty()) {
                 context.trace.report(ErrorsJs.JSCODE_NO_JAVASCRIPT_PRODUCED.on(argument))
@@ -106,9 +106,9 @@ class JsCallChecker(
 }
 
 class JsCodeErrorReporter(
-        private val nodeToReport: KtExpression,
-        private val code: String,
-        private val trace: BindingTrace
+    private val nodeToReport: KtExpression,
+    private val code: String,
+    private val trace: BindingTrace
 ) : ErrorReporter {
     override fun warning(message: String, startPosition: CodePosition, endPosition: CodePosition) {
         report(ErrorsJs.JSCODE_WARNING, message, startPosition, endPosition)
@@ -120,10 +120,10 @@ class JsCodeErrorReporter(
     }
 
     private fun report(
-            diagnosticFactory: DiagnosticFactory1<KtExpression, JsCallData>,
-            message: String,
-            startPosition: CodePosition,
-            endPosition: CodePosition
+        diagnosticFactory: DiagnosticFactory1<KtExpression, JsCallData>,
+        message: String,
+        startPosition: CodePosition,
+        endPosition: CodePosition
     ) {
         val data = when {
             nodeToReport.isConstantStringLiteral -> {
@@ -183,8 +183,8 @@ private val KtExpression.isConstantStringLiteral: Boolean
 open class JsCallData(val reportRange: TextRange, val message: String)
 
 class JsCallDataWithCode(
-        reportRange: TextRange,
-        message: String,
-        val code: String,
-        val codeRange: TextRange
+    reportRange: TextRange,
+    message: String,
+    val code: String,
+    val codeRange: TextRange
 ) : JsCallData(reportRange, message)
