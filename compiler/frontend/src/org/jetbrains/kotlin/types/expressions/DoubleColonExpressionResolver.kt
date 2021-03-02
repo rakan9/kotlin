@@ -544,10 +544,6 @@ class DoubleColonExpressionResolver(
 
         val dataFlowInfo = (lhs as? DoubleColonLHS.Expression)?.dataFlowInfo ?: c.dataFlowInfo
 
-        if (c.inferenceSession is CoroutineInferenceSession && result?.contains { it is StubType } == true) {
-            c.inferenceSession.addSimpleCall(expression)
-        }
-
         return dataFlowAnalyzer.checkType(createTypeInfo(result, dataFlowInfo), expression, c)
     }
 

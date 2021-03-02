@@ -36,7 +36,9 @@ import org.jetbrains.kotlin.resolve.calls.callResolverUtil.isBinaryRemOperator
 import org.jetbrains.kotlin.resolve.calls.callResolverUtil.isConventionCall
 import org.jetbrains.kotlin.resolve.calls.callResolverUtil.isInfixCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.createLookupLocation
+import org.jetbrains.kotlin.resolve.calls.callUtil.isCallableReference
 import org.jetbrains.kotlin.resolve.calls.context.*
+import org.jetbrains.kotlin.resolve.calls.inference.CoroutineInferenceSession
 import org.jetbrains.kotlin.resolve.calls.inference.CoroutineInferenceSupport
 import org.jetbrains.kotlin.resolve.calls.model.KotlinCallDiagnostic
 import org.jetbrains.kotlin.resolve.calls.model.MutableResolvedCall
@@ -209,17 +211,37 @@ class NewResolutionOldInference(
             )
         }
 
-        candidates = candidateInterceptor.interceptResolvedCandidates(candidates, context, candidateResolver, callResolver, name, kind, tracing)
+        candidates =
+            candidateInterceptor.interceptResolvedCandidates(candidates, context, candidateResolver, callResolver, name, kind, tracing)
 
         if (candidates.isEmpty()) {
             if (reportAdditionalDiagnosticIfNoCandidates(context, nameToResolve, kind, scopeTower, detailedReceiver)) {
                 return OverloadResolutionResultsImpl.nameNotFound()
             }
         }
-
         val overloadResults = convertToOverloadResults<D>(candidates, tracing, context)
-        coroutineInferenceSupport.checkCoroutineCalls(context, tracing, overloadResults)
+
+        checkBuilderInferenceCall(overloadResults, context, tracing)
+
         return overloadResults
+    }
+
+    private fun checkBuilderInferenceCall(
+        overloadResults: OverloadResolutionResultsImpl<*>,
+        context: BasicCallResolutionContext,
+        tracing: TracingStrategy
+    ) {
+        val resultingResolvedCall = overloadResults.takeIf { it.isSingleResult }?.resultingCall
+        val resultingCall = resultingResolvedCall?.call
+        val isNewInferenceEnabled = languageVersionSettings.supportsFeature(LanguageFeature.NewInference)
+
+        // We add callable references separately into an inference session storage as they are still resolved through the old type inference
+        // TODO: remove after KT-45034 is fixed
+        if (isNewInferenceEnabled && context.inferenceSession is CoroutineInferenceSession && resultingCall?.callElement?.isCallableReference() == true) {
+            context.inferenceSession.addCallableReferenceResolvedThroughOldInference(resultingResolvedCall)
+        } else {
+            coroutineInferenceSupport.checkCoroutineCalls(context, tracing, overloadResults)
+        }
     }
 
     fun <D : CallableDescriptor> runResolutionForGivenCandidates(

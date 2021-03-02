@@ -58,8 +58,7 @@ class CoroutineInferenceSession(
 ) {
     private val commonCalls = arrayListOf<PSICompletedCallInfo>()
 
-    // Simple calls are calls which might not have gone through type inference, but may contain unsubstituted postponed variables inside their types.
-    private val simpleCommonCalls = arrayListOf<KtExpression>()
+    private val callableReferencesResolvedThroughOldInference = arrayListOf<ResolvedCall<*>>()
 
     private var hasInapplicableCall = false
 
@@ -105,8 +104,11 @@ class CoroutineInferenceSession(
         }
     }
 
-    fun addSimpleCall(callExpression: KtExpression) {
-        simpleCommonCalls.add(callExpression)
+    // TODO: remove after KT-45034 is fixed
+    fun addCallableReferenceResolvedThroughOldInference(resolvedCall: ResolvedCall<*>) {
+        callableReferencesResolvedThroughOldInference.add(resolvedCall)
+
+        checkBuilderInferenceApplicability(resolvedCall)
     }
 
     override fun addCompletedCallInfo(callInfo: CompletedCallInfo) {
@@ -306,11 +308,8 @@ class CoroutineInferenceSession(
             reportErrors(callInfo, resolvedCall, errors)
         }
 
-        for (simpleCall in simpleCommonCalls) {
-            when (simpleCall) {
-                is KtCallableReferenceExpression -> updateCallableReferenceType(simpleCall, nonFixedTypesToResultSubstitutor)
-                else -> throw Exception("Unsupported call expression type")
-            }
+        for (callableReference in callableReferencesResolvedThroughOldInference) {
+            updateCallableReferenceType(callableReference, nonFixedTypesToResultSubstitutor)
         }
 
         atomCompleter.completeAll(lambda)
@@ -335,8 +334,8 @@ class CoroutineInferenceSession(
         completeCall(completedCall, atomCompleter)
     }
 
-    private fun updateCallableReferenceType(expression: KtCallableReferenceExpression, substitutor: NewTypeSubstitutor) {
-        val functionDescriptor = trace.get(BindingContext.DECLARATION_TO_DESCRIPTOR, expression) as? SimpleFunctionDescriptorImpl ?: return
+    private fun updateCallableReferenceType(callableReference: ResolvedCall<*>, substitutor: NewTypeSubstitutor) {
+        val functionDescriptor = callableReference.resultingDescriptor as? FunctionDescriptorImpl ?: return
         val returnType = functionDescriptor.returnType
 
         fun KotlinType.substituteAndApproximate() = typeApproximator.approximateDeclarationType(
