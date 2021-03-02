@@ -69,11 +69,11 @@ class TracingStrategyForImplicitConstructorDelegationCall(
         reportError(trace)
     }
 
-    override fun <D : CallableDescriptor?> ambiguity(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
+    override fun <D : CallableDescriptor> ambiguity(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
         reportError(trace)
     }
 
-    override fun <D : CallableDescriptor?> noneApplicable(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
+    override fun <D : CallableDescriptor> noneApplicable(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
         reportError(trace)
     }
 
@@ -90,7 +90,7 @@ class TracingStrategyForImplicitConstructorDelegationCall(
 
     // Underlying methods should not be called because such errors are impossible
     // when resolving delegation call
-    override fun <D : CallableDescriptor?> cannotCompleteResolve(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
+    override fun <D : CallableDescriptor> cannotCompleteResolve(trace: BindingTrace, descriptors: MutableCollection<out ResolvedCall<D>>) {
         unexpectedError("cannotCompleteResolve")
     }
 

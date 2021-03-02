@@ -46,7 +46,7 @@ object CallableReferenceTranslator {
 
     fun translate(expression: KtCallableReferenceExpression, context: TranslationContext): JsExpression {
         val referencedFunction = expression.callableReference.getResolvedCallWithAssert(context.bindingContext())
-        val descriptor = referencedFunction.getResultingDescriptor()
+        val descriptor = referencedFunction.resultingDescriptor
 
         val extensionReceiver = referencedFunction.extensionReceiver
         val dispatchReceiver = referencedFunction.dispatchReceiver
@@ -123,21 +123,20 @@ object CallableReferenceTranslator {
                 }
             }
 
-            val valueArgumentList = valueArgumentMap.values.toList()
+            override val call = fakeCall
 
-            override fun getCall() = fakeCall
+            override val valueArgumentsByIndex = valueArgumentMap.values.toList()
 
-            override fun getValueArgumentsByIndex(): List<ResolvedValueArgument> = valueArgumentList
+            override val valueArguments = valueArgumentMap
 
-            override fun getValueArguments(): Map<ValueParameterDescriptor, ResolvedValueArgument> = valueArgumentMap
-
-            override fun getExplicitReceiverKind(): ExplicitReceiverKind {
-                if (receiver != null) {
-                    return if (descriptor.isExtension) ExplicitReceiverKind.EXTENSION_RECEIVER else ExplicitReceiverKind.DISPATCH_RECEIVER
-                } else {
-                    return super.getExplicitReceiverKind()
+            override val explicitReceiverKind: ExplicitReceiverKind
+                get() {
+                    return if (receiver != null) {
+                        if (descriptor.isExtension) ExplicitReceiverKind.EXTENSION_RECEIVER else ExplicitReceiverKind.DISPATCH_RECEIVER
+                    } else {
+                        super.explicitReceiverKind
+                    }
                 }
-            }
         }
 
         val function = JsFunction(context.scope(), JsBlock(), "")

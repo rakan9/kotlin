@@ -560,11 +560,12 @@ class TrackingBindingTrace(val trace: BindingTrace) : BindingTrace by trace {
     }
 }
 
-sealed class NewAbstractResolvedCall<D : CallableDescriptor>() : ResolvedCall<D> {
+sealed class NewAbstractResolvedCall<D : CallableDescriptor> : ResolvedCall<D> {
+    abstract val resolvedCallAtom: ResolvedCallAtom
     abstract val argumentMappingByOriginal: Map<ValueParameterDescriptor, ResolvedCallArgument>
     abstract val kotlinCall: KotlinCall
-    protected abstract val languageVersionSettings: LanguageVersionSettings
 
+    protected abstract val languageVersionSettings: LanguageVersionSettings
     protected var argumentToParameterMap: Map<ValueArgument, ArgumentMatchImpl>? = null
     protected var _valueArguments: Map<ValueParameterDescriptor, ResolvedValueArgument>? = null
 
@@ -572,51 +573,55 @@ sealed class NewAbstractResolvedCall<D : CallableDescriptor>() : ResolvedCall<D>
 
     abstract fun containsOnlyOnlyInputTypesErrors(): Boolean
 
-    override fun getCall(): Call = kotlinCall.psiKotlinCall.psiCall
+    override val call
+        get() = kotlinCall.psiKotlinCall.psiCall
 
-    override fun getValueArguments(): Map<ValueParameterDescriptor, ResolvedValueArgument> {
-        if (_valueArguments == null) {
-            _valueArguments = createValueArguments()
-        }
-        return _valueArguments!!
-    }
-
-    override fun getValueArgumentsByIndex(): List<ResolvedValueArgument>? {
-        val arguments = ArrayList<ResolvedValueArgument?>(candidateDescriptor.valueParameters.size)
-        for (i in 0..candidateDescriptor.valueParameters.size - 1) {
-            arguments.add(null)
+    override val valueArguments: Map<ValueParameterDescriptor, ResolvedValueArgument>
+        get() {
+            if (_valueArguments == null) {
+                _valueArguments = createValueArguments()
+            }
+            return _valueArguments!!
         }
 
-        for ((parameterDescriptor, value) in valueArguments) {
-            val oldValue = arguments.set(parameterDescriptor.index, value)
-            if (oldValue != null) {
-                return null
+    override val valueArgumentsByIndex: List<ResolvedValueArgument>?
+        get() {
+            val arguments = ArrayList<ResolvedValueArgument?>(candidateDescriptor.valueParameters.size)
+            for (i in 0 until candidateDescriptor.valueParameters.size) {
+                arguments.add(null)
+            }
+
+            for ((parameterDescriptor, value) in valueArguments) {
+                val oldValue = arguments.set(parameterDescriptor.index, value)
+                if (oldValue != null) {
+                    return null
+                }
+            }
+
+            if (arguments.any { it == null }) return null
+
+            @Suppress("UNCHECKED_CAST")
+            return arguments as List<ResolvedValueArgument>
+        }
+
+    override val dataFlowInfoForArguments
+        get() = object : DataFlowInfoForArguments {
+            override fun getResultInfo(): DataFlowInfo = nonTrivialUpdatedResultInfo ?: kotlinCall.psiKotlinCall.resultDataFlowInfo
+
+            override fun getInfo(valueArgument: ValueArgument): DataFlowInfo {
+                val externalPsiCallArgument = kotlinCall.externalArgument?.psiCallArgument
+                if (externalPsiCallArgument?.valueArgument == valueArgument) {
+                    return externalPsiCallArgument.dataFlowInfoAfterThisArgument
+                }
+                return kotlinCall.psiKotlinCall.dataFlowInfoForArguments.getInfo(valueArgument)
             }
         }
-
-        if (arguments.any { it == null }) return null
-
-        @Suppress("UNCHECKED_CAST")
-        return arguments as List<ResolvedValueArgument>
-    }
 
     override fun getArgumentMapping(valueArgument: ValueArgument): ArgumentMapping {
         if (argumentToParameterMap == null) {
             argumentToParameterMap = argumentToParameterMap(resultingDescriptor, valueArguments)
         }
         return argumentToParameterMap!![valueArgument] ?: ArgumentUnmapped
-    }
-
-    override fun getDataFlowInfoForArguments() = object : DataFlowInfoForArguments {
-        override fun getResultInfo(): DataFlowInfo = nonTrivialUpdatedResultInfo ?: kotlinCall.psiKotlinCall.resultDataFlowInfo
-
-        override fun getInfo(valueArgument: ValueArgument): DataFlowInfo {
-            val externalPsiCallArgument = kotlinCall.externalArgument?.psiCallArgument
-            if (externalPsiCallArgument?.valueArgument == valueArgument) {
-                return externalPsiCallArgument.dataFlowInfoAfterThisArgument
-            }
-            return kotlinCall.psiKotlinCall.dataFlowInfoForArguments.getInfo(valueArgument)
-        }
     }
 
     // Currently, updated only with info from effect system
@@ -684,42 +689,42 @@ class NewResolvedCallImpl<D : CallableDescriptor>(
 ) : NewAbstractResolvedCall<D>() {
     var isCompleted = false
         private set
-    private lateinit var resultingDescriptor: D
 
-    private lateinit var typeArguments: List<UnwrappedType>
+    private lateinit var _resultingDescriptor: D
+    private lateinit var _typeArguments: List<UnwrappedType>
 
-    private var extensionReceiver = resolvedCallAtom.extensionReceiverArgument?.receiver?.receiverValue
-    private var dispatchReceiver = resolvedCallAtom.dispatchReceiverArgument?.receiver?.receiverValue
-    private var smartCastDispatchReceiverType: KotlinType? = null
+    override var extensionReceiver = resolvedCallAtom.extensionReceiverArgument?.receiver?.receiverValue
+    override var dispatchReceiver = resolvedCallAtom.dispatchReceiverArgument?.receiver?.receiverValue
+    override var smartCastDispatchReceiverType: KotlinType? = null
+
     private var expectedTypeForSamConvertedArgumentMap: MutableMap<ValueArgument, UnwrappedType>? = null
     private var expectedTypeForSuspendConvertedArgumentMap: MutableMap<ValueArgument, UnwrappedType>? = null
     private var expectedTypeForUnitConvertedArgumentMap: MutableMap<ValueArgument, UnwrappedType>? = null
     private var argumentTypeForConstantConvertedMap: MutableMap<KtExpression, IntegerValueTypeConstant>? = null
 
-
-    override val kotlinCall: KotlinCall get() = resolvedCallAtom.atom
-
-    override fun getStatus(): ResolutionStatus = getResultApplicability(diagnostics).toResolutionStatus()
-
-    override val argumentMappingByOriginal: Map<ValueParameterDescriptor, ResolvedCallArgument>
+    override val kotlinCall
+        get() = resolvedCallAtom.atom
+    override val status
+        get() = getResultApplicability(diagnostics).toResolutionStatus()
+    override val argumentMappingByOriginal
         get() = resolvedCallAtom.argumentMappingByOriginal
 
     @Suppress("UNCHECKED_CAST")
-    override fun getCandidateDescriptor(): D = resolvedCallAtom.candidateDescriptor as D
-    override fun getResultingDescriptor(): D = resultingDescriptor
-    override fun getExtensionReceiver(): ReceiverValue? = extensionReceiver
-    override fun getDispatchReceiver(): ReceiverValue? = dispatchReceiver
-    override fun getExplicitReceiverKind(): ExplicitReceiverKind = resolvedCallAtom.explicitReceiverKind
+    override val candidateDescriptor
+        get() = resolvedCallAtom.candidateDescriptor as D
+    override val resultingDescriptor
+        get() = _resultingDescriptor
+    override val explicitReceiverKind
+        get() = resolvedCallAtom.explicitReceiverKind
 
-    override fun getTypeArguments(): Map<TypeParameterDescriptor, KotlinType> {
-        val typeParameters = candidateDescriptor.typeParameters.takeIf { it.isNotEmpty() } ?: return emptyMap()
-        return typeParameters.zip(typeArguments).toMap()
-    }
+    override val typeArguments: Map<TypeParameterDescriptor, KotlinType>
+        get() {
+            val typeParameters = candidateDescriptor.typeParameters.takeIf { it.isNotEmpty() } ?: return emptyMap()
+            return typeParameters.zip(_typeArguments).toMap()
+        }
 
     override fun containsOnlyOnlyInputTypesErrors() =
         diagnostics.all { it is KotlinConstraintSystemDiagnostic && it.error is OnlyInputTypesDiagnostic }
-
-    override fun getSmartCastDispatchReceiverType(): KotlinType? = smartCastDispatchReceiverType
 
     fun updateExtensionReceiverWithSmartCastIfNeeded(smartCastExtensionReceiverType: KotlinType) {
         if (extensionReceiver is ImplicitClassReceiver) {
@@ -728,10 +733,6 @@ class NewResolvedCallImpl<D : CallableDescriptor>(
                 smartCastExtensionReceiverType,
             )
         }
-    }
-
-    fun setSmartCastDispatchReceiverType(smartCastDispatchReceiverType: KotlinType) {
-        this.smartCastDispatchReceiverType = smartCastDispatchReceiverType
     }
 
     fun updateDiagnostics(completedDiagnostics: Collection<KotlinCallDiagnostic>) {
@@ -768,9 +769,9 @@ class NewResolvedCallImpl<D : CallableDescriptor>(
         }
 
         @Suppress("UNCHECKED_CAST")
-        resultingDescriptor = substitutedResultingDescriptor(substitutor) as D
+        _resultingDescriptor = substitutedResultingDescriptor(substitutor) as D
 
-        typeArguments = resolvedCallAtom.freshVariablesSubstitutor.freshVariables.map {
+        _typeArguments = resolvedCallAtom.freshVariablesSubstitutor.freshVariables.map {
             val substituted = (substitutor ?: FreshVariableNewTypeSubstitutor.Empty).safeSubstitute(it.defaultType)
             typeApproximator
                 .approximateToSuperType(substituted, TypeApproximatorConfiguration.IntegerLiteralsTypesApproximation)

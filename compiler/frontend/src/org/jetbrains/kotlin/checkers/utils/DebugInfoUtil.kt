@@ -179,7 +179,7 @@ object DebugInfoUtil {
                 }
             }
 
-            private fun <E : KtElement, K, D : CallableDescriptor?> reportIfDynamicCall(
+            private fun <E : KtElement, K, D : CallableDescriptor> reportIfDynamicCall(
                 element: E,
                 key: K,
                 slice: WritableSlice<K, ResolvedCall<D>>

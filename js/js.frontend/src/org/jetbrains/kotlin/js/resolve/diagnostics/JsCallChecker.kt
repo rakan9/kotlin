@@ -55,7 +55,7 @@ class JsCallChecker(
     companion object {
         private val JS_PATTERN: DescriptorPredicate = PatternBuilder.pattern("kotlin.js.js(String)")
 
-        @JvmStatic fun <F : CallableDescriptor?> ResolvedCall<F>.isJsCall(): Boolean {
+        @JvmStatic fun <F : CallableDescriptor> ResolvedCall<F>.isJsCall(): Boolean {
             val descriptor = resultingDescriptor
             return descriptor is SimpleFunctionDescriptor && JS_PATTERN.test(descriptor)
         }

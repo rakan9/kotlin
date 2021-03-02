@@ -322,7 +322,7 @@ class DiagnosticReporterByTrackingStrategy(
                 resolvedCall.updateExtensionReceiverWithSmartCastIfNeeded(smartCastResult.resultType)
             }
             if (resolvedCall.dispatchReceiver == expressionArgument.receiver.receiverValue) {
-                resolvedCall.setSmartCastDispatchReceiverType(smartCastResult.resultType)
+                resolvedCall.smartCastDispatchReceiverType = smartCastResult.resultType
             }
         }
     }

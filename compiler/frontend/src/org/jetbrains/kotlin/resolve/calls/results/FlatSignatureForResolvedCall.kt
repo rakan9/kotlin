@@ -65,7 +65,7 @@ fun createOverloadingConflictResolver(
     specificityComparator,
     platformOverloadsSpecificityComparator,
     cancellationChecker,
-    MutableResolvedCall<*>::getResultingDescriptor,
+    MutableResolvedCall<*>::resultingDescriptor,
     ConstraintSystemBuilderImpl.Companion::forSpecificity,
     MutableResolvedCall<*>::createFlatSignature,
     { (it as? VariableAsFunctionResolvedCallImpl)?.variableCall },

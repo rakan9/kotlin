@@ -213,9 +213,9 @@ private fun resolveAccessorCall(
     context: TranslationContext
 ): ResolvedCall<PropertyDescriptor> {
     return object : ResolvedCall<PropertyDescriptor> {
-        override fun getStatus() = ResolutionStatus.SUCCESS
+        override val status = ResolutionStatus.SUCCESS
 
-        override fun getCall(): Call = object : Call {
+        override val call get() = object : Call {
             override fun getCallOperationNode(): ASTNode? = null
             override fun getExplicitReceiver(): Receiver? = null
             override fun getDispatchReceiver(): ReceiverValue? = null
@@ -229,17 +229,17 @@ private fun resolveAccessorCall(
             override fun getCallType(): Call.CallType = Call.CallType.DEFAULT
         }
 
-        override fun getCandidateDescriptor() = suspendPropertyDescriptor
-        override fun getResultingDescriptor() = suspendPropertyDescriptor
-        override fun getExtensionReceiver() = null
-        override fun getDispatchReceiver() = null
-        override fun getExplicitReceiverKind() = ExplicitReceiverKind.NO_EXPLICIT_RECEIVER
-        override fun getValueArguments(): MutableMap<ValueParameterDescriptor, ResolvedValueArgument> = mutableMapOf()
-        override fun getValueArgumentsByIndex(): MutableList<ResolvedValueArgument> = mutableListOf()
+        override val candidateDescriptor = suspendPropertyDescriptor
+        override val resultingDescriptor = suspendPropertyDescriptor
+        override val extensionReceiver: ReceiverValue? = null
+        override val dispatchReceiver: ReceiverValue? = null
+        override val explicitReceiverKind = ExplicitReceiverKind.NO_EXPLICIT_RECEIVER
+        override val valueArguments: MutableMap<ValueParameterDescriptor, ResolvedValueArgument> = mutableMapOf()
+        override val valueArgumentsByIndex: MutableList<ResolvedValueArgument> = mutableListOf()
         override fun getArgumentMapping(valueArgument: ValueArgument) = ArgumentUnmapped
-        override fun getTypeArguments(): MutableMap<TypeParameterDescriptor, KotlinType> = mutableMapOf()
-        override fun getDataFlowInfoForArguments(): DataFlowInfoForArguments = throw IllegalStateException()
-        override fun getSmartCastDispatchReceiverType(): KotlinType? = null
+        override val typeArguments: MutableMap<TypeParameterDescriptor, KotlinType> = mutableMapOf()
+        override val dataFlowInfoForArguments: DataFlowInfoForArguments get() = throw IllegalStateException()
+        override val smartCastDispatchReceiverType: KotlinType? = null
     }
 }
 

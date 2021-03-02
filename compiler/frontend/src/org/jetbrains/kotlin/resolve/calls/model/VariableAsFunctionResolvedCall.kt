@@ -43,7 +43,7 @@ class VariableAsFunctionResolvedCallImpl(
 
     override fun isCompleted(): Boolean = functionCall.isCompleted && variableCall.isCompleted
 
-    override fun getStatus(): ResolutionStatus = variableCall.status.combine(functionCall.status)
+    override val status get() = variableCall.status.combine(functionCall.status)
 
     override fun getTrace(): DelegatingBindingTrace {
         return functionCall.trace

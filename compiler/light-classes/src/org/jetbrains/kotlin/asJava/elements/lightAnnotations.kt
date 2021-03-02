@@ -94,7 +94,7 @@ class KtLightAnnotationForSourceEntry(
 
     override fun findDeclaredAttributeValue(name: String?): PsiAnnotationMemberValue? = getAttributeValue(name, false)
 
-    private fun getCallEntry(name: String): MutableMap.MutableEntry<ValueParameterDescriptor, ResolvedValueArgument>? {
+    private fun getCallEntry(name: String): Map.Entry<ValueParameterDescriptor, ResolvedValueArgument>? {
         val resolvedCall = kotlinOrigin.getResolvedCall() ?: return null
         return resolvedCall.valueArguments.entries.find { (param, _) -> param.name.asString() == name }
     }
