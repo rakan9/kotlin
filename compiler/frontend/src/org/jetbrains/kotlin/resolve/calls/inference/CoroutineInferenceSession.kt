@@ -128,12 +128,6 @@ class CoroutineInferenceSession(
         }
     }
 
-    private fun anyReceiverOrArgumentsContainStubType(descriptor: CallableDescriptor): Boolean {
-        return descriptor.dispatchReceiverParameter?.type?.contains { it is StubType } == true ||
-                descriptor.extensionReceiverParameter?.type?.contains { it is StubType } == true ||
-                descriptor.valueParameters.any { valueParameter -> valueParameter.type.contains { it is StubType } }
-    }
-
     fun hasInapplicableCall(): Boolean = hasInapplicableCall
 
     override fun writeOnlyStubs(callInfo: SingleCallResolutionResult): Boolean {
