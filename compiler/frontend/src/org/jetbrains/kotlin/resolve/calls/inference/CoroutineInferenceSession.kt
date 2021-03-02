@@ -116,13 +116,6 @@ class CoroutineInferenceSession(
 
         commonCalls.add(callInfo)
 
-        val resultingDescriptor = callInfo.resolvedCall.resultingDescriptor
-
-        // This check is similar to one for old inference, see getCoroutineInferenceData() function
-        val checkCall = resultingDescriptor is LocalVariableDescriptor || anyReceiverOrArgumentsContainStubType(resultingDescriptor)
-
-        if (!checkCall) return
-
         checkBuilderInferenceApplicability(callInfo.resolvedCall)
     }
 
