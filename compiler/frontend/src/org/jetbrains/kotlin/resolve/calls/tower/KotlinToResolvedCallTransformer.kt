@@ -681,7 +681,7 @@ sealed class NewAbstractResolvedCall<D : CallableDescriptor> : ResolvedCall<D> {
 }
 
 class NewResolvedCallImpl<D : CallableDescriptor>(
-    val resolvedCallAtom: ResolvedCallAtom,
+    override val resolvedCallAtom: ResolvedCallAtom,
     substitutor: NewTypeSubstitutor?,
     private var diagnostics: Collection<KotlinCallDiagnostic>,
     private val typeApproximator: TypeApproximator,
