@@ -93,16 +93,9 @@ class KotlinResolutionStatelessCallbacksImpl(
         isCoroutineCallWithAdditionalInference(parameter, argument.psiCallArgument.valueArgument, languageVersionSettings)
 
     override fun isApplicableCallForBuilderInference(
-        descriptor: CallableDescriptor,
         languageVersionSettings: LanguageVersionSettings,
-        resolvedAtom: ResolvedCallAtom?
-    ): Boolean {
-        return org.jetbrains.kotlin.resolve.calls.inference.isApplicableCallForBuilderInference(
-            descriptor,
-            languageVersionSettings,
-            resolvedAtom
-        )
-    }
+        resolvedCall: ResolvedCallMarker?
+    ) = org.jetbrains.kotlin.resolve.calls.inference.isApplicableCallForBuilderInference(languageVersionSettings, resolvedCall)
 
     override fun isOldIntersectionIsEmpty(types: Collection<KotlinType>): Boolean {
         return TypeIntersector.intersectTypes(types) == null

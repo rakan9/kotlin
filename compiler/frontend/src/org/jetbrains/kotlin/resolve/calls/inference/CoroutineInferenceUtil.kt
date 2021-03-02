@@ -224,9 +224,7 @@ class CoroutineInferenceSupport(
         callCompleter.completeCall(context, overloadResults, tracingStrategy)
         if (!resultingCall.isReallySuccess()) return
 
-        val resultingDescriptor = resultingCall.resultingDescriptor
-        // Resolved atom is needed for extra checks for the new inference
-        if (!isApplicableCallForBuilderInference(resultingDescriptor, languageVersionSettings, null)) {
+        if (!isApplicableCallForBuilderInference(languageVersionSettings, resultingCall)) {
             inferenceData.badCallHappened()
         }
 
@@ -239,6 +237,7 @@ class CoroutineInferenceSupport(
             }
         }
 
+        val resultingDescriptor = resultingCall.resultingDescriptor
         val extensionReceiver = resultingDescriptor.extensionReceiverParameter ?: return
         val allowOnlyTrivialConstraintsForReceiver =
             if (languageVersionSettings.supportsFeature(LanguageFeature.ExperimentalBuilderInference))
@@ -310,12 +309,9 @@ fun ResolvedAtom.areThereLambdasWithStubTypeInParameterOrReceiver(): Boolean {
         areThereParametersOfStubType || isReceiverOfStubType || atom.areThereLambdasWithStubTypeInParameterOrReceiver()
     }
 }
+fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersionSettings, resolvedCall: ResolvedCallMarker?): Boolean {
+    val descriptor = resolvedCall?.resultingDescriptor ?: return true
 
-fun isApplicableCallForBuilderInference(
-    descriptor: CallableDescriptor,
-    languageVersionSettings: LanguageVersionSettings,
-    resolvedAtom: ResolvedCallAtom?,
-): Boolean {
     if (!languageVersionSettings.supportsFeature(LanguageFeature.ExperimentalBuilderInference)) {
         return isGoodCallForOldCoroutines(descriptor)
     }
