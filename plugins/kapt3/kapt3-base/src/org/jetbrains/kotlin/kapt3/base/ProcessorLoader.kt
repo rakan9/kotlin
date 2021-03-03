@@ -23,7 +23,7 @@ import kotlin.collections.LinkedHashSet
 class LoadedProcessors(val processors: List<IncrementalProcessor>, val classLoader: ClassLoader)
 
 open class ProcessorLoader(private val options: KaptOptions, private val logger: KaptLogger) : Closeable {
-    private var classLoaderToClose: URLClassLoader? = null
+    private var annotationProcessingClassLoader: URLClassLoader? = null
 
     fun loadProcessors(parentClassLoader: ClassLoader = ClassLoader.getSystemClassLoader()): LoadedProcessors {
         val classpath = LinkedHashSet<File>().apply {
@@ -32,14 +32,9 @@ open class ProcessorLoader(private val options: KaptOptions, private val logger:
                 addAll(options.compileClasspath)
             }
         }
-        val classLoader = if (options.processingClassLoader != null) {
-            logger.info("Use provided processing ClassLoader for classpath: $classpath")
-            options.processingClassLoader
-        } else {
-            val cl = URLClassLoader(classpath.map { it.toURI().toURL() }.toTypedArray(), parentClassLoader)
-            classLoaderToClose = cl
-            cl
-        }
+
+        val classLoader = URLClassLoader(classpath.map { it.toURI().toURL() }.toTypedArray(), parentClassLoader)
+        this.annotationProcessingClassLoader = classLoader
 
         val processors = if (options.processors.isNotEmpty()) {
             logger.info("Annotation processor class names are set, skip AP discovery")
@@ -125,8 +120,17 @@ open class ProcessorLoader(private val options: KaptOptions, private val logger:
     }
 
     private fun tryLoadProcessor(fqName: String, classLoader: ClassLoader): Processor? {
+        val providedClassloader = options.processingClassLoader?.takeIf { !options.separateClassloaderForProcessors.contains(fqName) }
+        val classLoaderToUse = if (providedClassloader != null) {
+            logger.info { "Use provided ClassLoader for processor '$fqName'" }
+            providedClassloader
+        } else {
+            logger.info { "Use own ClassLoader for processor '$fqName'" }
+            classLoader
+        }
+
         val annotationProcessorClass = try {
-            Class.forName(fqName, true, classLoader)
+            Class.forName(fqName, true, classLoaderToUse)
         } catch (e: Throwable) {
             logger.warn("Can't find annotation processor class $fqName: ${e.message}")
             return null
@@ -147,6 +151,6 @@ open class ProcessorLoader(private val options: KaptOptions, private val logger:
     }
 
     override fun close() {
-        classLoaderToClose?.close()
+        annotationProcessingClassLoader?.close()
     }
 }
