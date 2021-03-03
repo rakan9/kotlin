@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtProperty
 
 class KtTypeRendererTest : KotlinLightCodeInsightFixtureTestCase() {
+    override fun isFirPlugin() = true
+
     private fun doTestByTypeText(
         type: String,
         expected: String,
@@ -137,7 +139,7 @@ class KtTypeRendererTest : KotlinLightCodeInsightFixtureTestCase() {
         doTestByTypeText(
             type = "Int.(String, Long) -> Char",
             expected = "Function3<Int, String, Long, Char>",
-            rendererOptions = KtTypeRendererOptions.SHORT_NAMES.copy(renderFunctionTypes = false)
+            rendererOptions = KtTypeRendererOptions.SHORT_NAMES.copy(renderFunctionType = false)
         )
     }
 

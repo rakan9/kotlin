@@ -1,0 +1,10 @@
+interface Some
+object O1 : Some
+object O2 : Some
+enum class SomeEnum {
+    constructor(x: Some)
+    val x: Some
+     FIRST
+     SECOND
+    abstract fun check(y: Some): Boolean
+}

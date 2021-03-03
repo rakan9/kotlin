@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.idea.frontend.api.KtAnalysisSession
 import org.jetbrains.kotlin.idea.frontend.api.ReadActionConfinementValidityToken
 import org.jetbrains.kotlin.idea.frontend.api.ValidityToken
 import org.jetbrains.kotlin.idea.frontend.api.assertIsValidAndAccessible
+import org.jetbrains.kotlin.idea.frontend.api.components.KtSymbolDeclarationRendererProvider
 import org.jetbrains.kotlin.idea.frontend.api.fir.components.*
 import org.jetbrains.kotlin.idea.frontend.api.fir.symbols.KtFirSymbolProvider
 import org.jetbrains.kotlin.idea.frontend.api.fir.utils.EnclosingDeclarationContext
@@ -59,6 +60,9 @@ private constructor(
         KtFirSymbolDeclarationOverridesProvider(this, token)
 
     override val referenceShortenerImpl = KtFirReferenceShortener(this, token, firResolveState)
+
+    override val symbolDeclarationRendererProviderImpl: KtSymbolDeclarationRendererProvider =
+        KtFirSymbolDeclarationRendererProvider(this, token)
 
     override val expressionInfoProviderImpl = KtFirExpressionInfoProvider(this, token)
 

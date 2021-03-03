@@ -34,6 +34,8 @@ object StandardClassIds {
     val Float = "Float".baseId()
     val Double = "Double".baseId()
 
+    val extensionFunctionType = "ExtensionFunctionType".baseId()
+
     val UByte = Byte.unsignedId()
     val UShort = Short.unsignedId()
     val UInt = Int.unsignedId()

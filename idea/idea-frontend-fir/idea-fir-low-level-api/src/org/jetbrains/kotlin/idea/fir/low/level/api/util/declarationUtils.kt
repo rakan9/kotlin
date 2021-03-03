@@ -5,11 +5,12 @@
 
 package org.jetbrains.kotlin.idea.fir.low.level.api.util
 
-import org.jetbrains.kotlin.fir.containingClass
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
-import org.jetbrains.kotlin.fir.psi
-import org.jetbrains.kotlin.fir.realPsi
+import org.jetbrains.kotlin.fir.resolve.firProvider
 import org.jetbrains.kotlin.fir.resolve.providers.FirSymbolProvider
+import org.jetbrains.kotlin.fir.resolve.toFirRegularClass
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.idea.fir.low.level.api.api.InvalidFirElementTypeException
 import org.jetbrains.kotlin.idea.fir.low.level.api.element.builder.getNonLocalContainingOrThisDeclaration
 import org.jetbrains.kotlin.idea.fir.low.level.api.file.builder.FirFileBuilder
@@ -135,18 +136,39 @@ private fun KtTypeAlias.findFir(firSymbolProvider: FirSymbolProvider): FirTypeAl
 val FirDeclaration.isGeneratedDeclaration
     get() = realPsi == null
 
-internal fun FirDeclaration.collectDesignation(): List<FirDeclaration> {
-    require(this is FirCallableDeclaration<*>)
-    val designation = mutableListOf<FirDeclaration>()
-    val firProvider = session.firIdeProvider
-    var containingClassId = containingClass()?.classId
-    while (containingClassId != null) {
-        val klass = firProvider.getFirClassifierByFqName(containingClassId)
-        if (klass != null) {
-            designation.add(klass)
+internal fun FirCallableDeclaration<*>.collectDesignation(): List<FirClassLikeDeclaration<*>> {
+    return containingClass()
+        ?.toFirRegularClass(session)
+        ?.collectDesignation()
+        ?: return emptyList()
+}
+
+fun FirRegularClass.collectDesignation(): List<FirClassLikeDeclaration<*>> {
+    val designation = mutableListOf<FirClassLikeDeclaration<*>>()
+    designation.add(this)
+
+    fun FirRegularClass.collectForNonLocal() {
+        require(!isLocal)
+        val firProvider = session.firProvider
+        var containingClassId = classId.outerClassId
+        while (containingClassId != null) {
+            val currentClass = firProvider.getFirClassifierByFqName(containingClassId) ?: break
+            designation.add(currentClass)
+            containingClassId = containingClassId.outerClassId
         }
-        containingClassId = containingClassId.outerClassId
     }
+
+    fun FirRegularClass.collectForLocal() {
+        require(isLocal)
+        var containingClassLookUp = containingClassForLocal()
+        while (containingClassLookUp != null && containingClassLookUp.classId.isLocal) {
+            val currentClass = containingClassLookUp.toFirRegularClass(session) ?: break
+            designation.add(currentClass)
+            containingClassLookUp = currentClass.containingClassForLocal()
+        }
+    }
+
+    if (isLocal) collectForLocal() else collectForNonLocal()
     designation.reverse()
     return designation
 }
