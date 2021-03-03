@@ -12,29 +12,15 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentMap
 
-interface ClassLoadersProvider {
-
-    fun getForClassPath(files: List<File>): ClassLoader
-
-    fun getForClassPath(files: List<File>, parent: ClassLoader): ClassLoader
-
-}
-
-class CreatingClassloadersProvider(private val parentClassLoader: ClassLoader = ClassLoader.getSystemClassLoader()) : ClassLoadersProvider {
-    override fun getForClassPath(files: List<File>): ClassLoader =
-        getForClassPath(files, parentClassLoader)
-
-    override fun getForClassPath(files: List<File>, parent: ClassLoader): ClassLoader =
-        URLClassLoader(files.map { it.toURI().toURL() }.toTypedArray(), parent)
-
-}
-
-class CachingClassLoadersProvider(
+/**
+ * LRU cache for [ClassLoader]s by class path.
+ */
+class ClassLoadersCache(
     size: Int,
     private val parentClassLoader: ClassLoader = ClassLoader.getSystemClassLoader()
-) : ClassLoadersProvider, AutoCloseable {
+) : AutoCloseable {
 
-    private val logger = LoggerFactory.getLogger(ClassLoadersProvider::class.java)
+    private val logger = LoggerFactory.getLogger(ClassLoadersCache::class.java)
 
     private val cache: ConcurrentMap<CacheKey, URLClassLoader> =
         CacheBuilder
@@ -47,9 +33,9 @@ class CachingClassLoadersProvider(
             .build<CacheKey, URLClassLoader>()
             .asMap()
 
-    override fun getForClassPath(files: List<File>): ClassLoader = getForClassPath(files, parentClassLoader)
+    private fun getForClassPath(files: List<File>): ClassLoader = getForClassPath(files, parentClassLoader)
 
-    override fun getForClassPath(files: List<File>, parent: ClassLoader): ClassLoader {
+    private fun getForClassPath(files: List<File>, parent: ClassLoader): ClassLoader {
         val key = makeKey(files)
         return cache.getOrPut(key) {
             makeClassLoader(key, parent)
@@ -63,7 +49,7 @@ class CachingClassLoadersProvider(
      * Useful when you have internal and external artifacts and internal ones can be references from other internal artefacts only.
      * So you can safely cache [ClassLoader] from external artefacts and use it for internal ones.
      */
-    fun getSplitted(bottom: List<File>, top: List<File>): ClassLoader {
+    fun getForSplittedPaths(bottom: List<File>, top: List<File>): ClassLoader {
         return if (bottom.isEmpty() || top.isEmpty()) {
             getForClassPath(bottom + top)
         } else {
@@ -84,15 +70,14 @@ class CachingClassLoadersProvider(
         logger.info("Creating new classloader for classpath: $cp")
         return URLClassLoader(cp.toTypedArray(), parent)
     }
+
+    private fun makeKey(files: List<File>): CacheKey {
+        //probably should walk dirs content for actual last modified
+        val entries = files.map { f -> ClasspathEntry(f.toURI().toURL(), f.lastModified()) }
+        return CacheKey(entries)
+    }
+
+    private data class ClasspathEntry(val path: URL, val modificationTimestamp: Long)
+
+    private data class CacheKey(val entries: List<ClasspathEntry>)
 }
-
-
-private fun makeKey(files: List<File>): CacheKey {
-    //probably should walk dirs content for actual last modified
-    val entries = files.map { f -> ClasspathEntry(f.toURI().toURL(), f.lastModified()) }
-    return CacheKey(entries)
-}
-
-private data class ClasspathEntry(val path: URL, val modificationTimestamp: Long)
-
-private data class CacheKey(val entries: List<ClasspathEntry>)
