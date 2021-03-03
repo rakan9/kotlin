@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
+import java.time.Duration
 import java.util.concurrent.ConcurrentMap
 
 /**
@@ -17,7 +18,8 @@ import java.util.concurrent.ConcurrentMap
  */
 class ClassLoadersCache(
     size: Int,
-    private val parentClassLoader: ClassLoader = ClassLoader.getSystemClassLoader()
+    private val parentClassLoader: ClassLoader = ClassLoader.getSystemClassLoader(),
+    ttl: Duration = Duration.ofHours(1)
 ) : AutoCloseable {
 
     private val logger = LoggerFactory.getLogger(ClassLoadersCache::class.java)
@@ -26,6 +28,7 @@ class ClassLoadersCache(
         CacheBuilder
             .newBuilder()
             .maximumSize(size.toLong())
+            .expireAfterAccess(ttl)
             .removalListener<CacheKey, URLClassLoader> { (key, cl) ->
                 logger.info("Removing classloader from cache: ${key.entries.map { it.path }}")
                 cl.close()
