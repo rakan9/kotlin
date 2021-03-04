@@ -586,7 +586,14 @@ class Kapt3GradleSubplugin @Inject internal constructor(private val registry: To
                 it.mapDiagnosticLocations = kaptExtension.mapDiagnosticLocations
                 it.annotationProcessorFqNames = kaptExtension.processors.split(',').filter { it.isNotEmpty() }
                 it.javacOptions = dslJavacOptions.get()
-                it.classLoadersCacheSize = project.classLoadersCacheSize()
+                if (includeCompileClasspath && project.classLoadersCacheSize() > 0) {
+                    project.logger.warn(
+                        "ClassLoaders cache can't be enabled together with AP discovery in compile classpath."
+                                + "\nSet 'kapt.includeCompileClasspath = false' to disable discovery"
+                    )
+                } else {
+                    it.classLoadersCacheSize = project.classLoadersCacheSize()
+                }
                 it.disableClassloaderCacheForProcessors = project.disableClassloaderCacheForProcessors()
             }
 
