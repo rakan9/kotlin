@@ -18,6 +18,7 @@ import org.gradle.workers.WorkParameters
 import org.gradle.workers.WorkerExecutor
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.KAPT_WORKER_DEPENDENCIES_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.internal.kapt.classloaders.ClassLoadersCache
+import org.jetbrains.kotlin.gradle.internal.kapt.classloaders.rootOrSelf
 import org.jetbrains.kotlin.gradle.internal.kapt.incremental.KaptIncrementalChanges
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.CompilerPluginOptions
@@ -321,13 +322,7 @@ private class KaptExecution @Inject constructor(
         )
     }
 
-    private fun findRootClassLoader(): ClassLoader {
-        tailrec fun parentOrSelf(classLoader: ClassLoader): ClassLoader {
-            val parent = classLoader.parent ?: return classLoader
-            return parentOrSelf(parent)
-        }
-        return parentOrSelf(KaptExecution::class.java.classLoader)
-    }
+    private fun findRootClassLoader(): ClassLoader = KaptExecution::class.java.classLoader.rootOrSelf()
 }
 
 internal data class KaptOptionsForWorker(

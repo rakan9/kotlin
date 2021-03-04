@@ -36,7 +36,7 @@ class ClassLoadersCache(
             .build<CacheKey, URLClassLoader>()
             .asMap()
 
-    private fun getForClassPath(files: List<File>): ClassLoader = getForClassPath(files, parentClassLoader)
+    fun getForClassPath(files: List<File>): ClassLoader = getForClassPath(files, parentClassLoader)
 
     private fun getForClassPath(files: List<File>, parent: ClassLoader): ClassLoader {
         val key = makeKey(files)
