@@ -5,7 +5,7 @@
 
 package org.jetbrains.kotlin.fir.types
 
-import org.jetbrains.kotlin.fir.symbols.StandardClassIds
+import org.jetbrains.kotlin.name.StandardClassIds
 
 fun ConeKotlinType.createOutArrayType(nullable: Boolean = false): ConeKotlinType {
     return ConeKotlinTypeProjectionOut(this).createArrayType(nullable)
