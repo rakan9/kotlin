@@ -37,7 +37,7 @@ class KaptOptions(
     val mode: AptMode,
     val detectMemoryLeaks: DetectMemoryLeaksMode,
 
-    //todo these two config can be replaced with single function-like interface (ProcessorName -> ClassLoader),
+    //these two config can be replaced with single function-like interface (ProcessorName -> ClassLoader),
     // but it is hard to pass function between different classloaders
     //if defined use it to run processors instead of creating new one
     val processingClassLoader: ClassLoader?,
