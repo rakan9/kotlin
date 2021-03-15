@@ -58,6 +58,7 @@ dependencies {
     embedded(project(":kotlin-gradle-build-metrics"))
 
     implementation("com.google.code.gson:gson:${rootProject.extra["versions.jar.gson"]}")
+    implementation("com.google.guava:guava:${rootProject.extra["versions.jar.guava"]}")
     implementation("de.undercouch:gradle-download-task:4.1.1")
     implementation("com.github.gundy:semver4j:0.16.4:nodeps") {
         exclude(group = "*")
