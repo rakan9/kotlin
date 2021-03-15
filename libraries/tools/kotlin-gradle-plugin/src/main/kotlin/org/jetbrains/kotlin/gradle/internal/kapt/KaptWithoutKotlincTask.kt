@@ -286,6 +286,7 @@ private class KaptExecution @Inject constructor(
             .enumConstants.single { (it as Enum<*>).name == "NONE" }
 
         //in case cache was enabled and then disabled
+        //or disabled for some modules
         val processingClassLoader =
             if (classloadersCacheSize > 0) {
                 classLoadersCache!!.getForSplittedPaths(processingClasspath - processingExternalClasspath, processingExternalClasspath)

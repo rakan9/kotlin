@@ -50,7 +50,7 @@ class ClassLoadersCache(
      * When creating new [ClassLoader] it tries to get [top] from cache first and then create new ClassLoader from [bottom] files,
      * providing [top] [ClassLoader] as parent.
      * Useful when you have internal and external artifacts and internal ones can be references from other internal artefacts only.
-     * So you can safely cache [ClassLoader] from external artefacts and use it for internal ones.
+     * So you can safely cache [ClassLoader] from external artifacts and use it for internal ones.
      */
     fun getForSplittedPaths(bottom: List<File>, top: List<File>): ClassLoader {
         return if (bottom.isEmpty() || top.isEmpty()) {
