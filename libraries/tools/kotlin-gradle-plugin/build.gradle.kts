@@ -82,7 +82,7 @@ dependencies {
     runtimeOnly(project(":kotlin-reflect"))
 
     jarContents(compileOnly(intellijDep()) {
-        includeJars("asm-all", "gson", "serviceMessages", rootProject = rootProject)
+        includeJars("asm-all", "gson", "guava", "serviceMessages", rootProject = rootProject)
     })
 
     // com.android.tools.build:gradle has ~50 unneeded transitive dependencies
