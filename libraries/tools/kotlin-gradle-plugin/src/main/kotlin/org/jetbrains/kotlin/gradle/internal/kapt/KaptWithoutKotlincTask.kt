@@ -132,8 +132,8 @@ abstract class KaptWithoutKotlincTask @Inject constructor(
             classesDir,
             stubsDir.asFile.get(),
 
-            kaptClasspath.files.sortedBy { it.path }.toList(),
-            kaptExternalClasspath.files.sortedBy { it.path }.toList(),
+            kaptClasspath.files.toList(),
+            kaptExternalClasspath.files.toList(),
             annotationProcessorFqNames,
 
             getAnnotationProcessorOptions(),
@@ -249,15 +249,16 @@ private class KaptExecution @Inject constructor(
         val kaptClasspathUrls = kaptClasspath.map { it.toURI().toURL() }.toTypedArray()
         val rootClassLoader = findRootClassLoader()
 
-        if (cachedKaptClassLoader == null) {
+        val kaptClassLoader = cachedKaptClassLoader ?: run {
             val classLoaderWithToolsJar = if (toolsJarURLSpec.isNotEmpty() && !javacIsAlreadyHere()) {
                 URLClassLoader(arrayOf(URL(toolsJarURLSpec)), rootClassLoader)
             } else {
                 rootClassLoader
             }
-            cachedKaptClassLoader = URLClassLoader(kaptClasspathUrls, classLoaderWithToolsJar)
+            val result = URLClassLoader(kaptClasspathUrls, classLoaderWithToolsJar)
+            cachedKaptClassLoader = result
+            result
         }
-        val kaptClassLoader = cachedKaptClassLoader!!
 
         if (classLoadersCache == null && classloadersCacheSize > 0) {
             logger.info("Initializing KAPT classloaders cache with size = $classloadersCacheSize")
@@ -289,7 +290,7 @@ private class KaptExecution @Inject constructor(
         //or disabled for some modules
         val processingClassLoader =
             if (classloadersCacheSize > 0) {
-                classLoadersCache!!.getForSplittedPaths(processingClasspath - processingExternalClasspath, processingExternalClasspath)
+                classLoadersCache!!.getForSplitPaths(processingClasspath - processingExternalClasspath, processingExternalClasspath)
             } else {
                 null
             }

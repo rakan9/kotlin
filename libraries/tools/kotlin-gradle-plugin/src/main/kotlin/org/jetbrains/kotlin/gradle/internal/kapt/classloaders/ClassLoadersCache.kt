@@ -52,7 +52,7 @@ class ClassLoadersCache(
      * Useful when you have internal and external artifacts and internal ones can be references from other internal artefacts only.
      * So you can safely cache [ClassLoader] from external artifacts and use it for internal ones.
      */
-    fun getForSplittedPaths(bottom: List<File>, top: List<File>): ClassLoader {
+    fun getForSplitPaths(bottom: List<File>, top: List<File>): ClassLoader {
         return if (bottom.isEmpty() || top.isEmpty()) {
             getForClassPath(bottom + top)
         } else {

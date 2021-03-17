@@ -57,14 +57,14 @@ class ClassLoadersCacheTest {
     }
 
     @Test
-    fun testSplittedClassPath() {
+    fun testSplitClassPath() {
         val cache = ClassLoadersCache(10, rootClassLoader)
         val topCp = listOf(someJar)
         val bottomCp1 = listOf(otherJar)
         val bottomCp2 = listOf(otherJar, findJarByClass(JvmField::class.java)!!)
 
-        val cl1 = cache.getForSplittedPaths(bottomCp1, topCp)
-        val cl2 = cache.getForSplittedPaths(bottomCp2, topCp)
+        val cl1 = cache.getForSplitPaths(bottomCp1, topCp)
+        val cl2 = cache.getForSplitPaths(bottomCp2, topCp)
 
         assertSame(
             cl1.loadClass(someClass.name),
