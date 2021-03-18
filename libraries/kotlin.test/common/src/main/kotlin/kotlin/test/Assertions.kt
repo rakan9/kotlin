@@ -238,6 +238,50 @@ private inline fun <A, E> assertArrayContains(
     )
 }
 
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(range: IntRange, value: Int, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(range: LongRange, value: Long, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(range: ClosedFloatingPointRange<Float>, value: Float, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(range: ClosedFloatingPointRange<Double>, value: Double, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(range: CharRange, value: Char, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+@OptIn(ExperimentalUnsignedTypes::class)
+fun assertContains(range: UIntRange, value: UInt, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [range] contains the specified [value], with an optional [message]. */
+@SinceKotlin("1.5")
+@OptIn(ExperimentalUnsignedTypes::class)
+fun assertContains(range: ULongRange, value: ULong, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
 /**
  * Asserts that the [expected] iterable is *structurally* equal to the [actual] iterable,
  * i.e. contains the same number of the same elements in the same order, with an optional [message].
