@@ -289,6 +289,41 @@ fun <@OnlyInputTypes K, V> assertContains(map: Map<K, V>, key: K, message: Strin
 }
 
 /**
+ * Asserts that the [charSequence] contains the specified [char], with an optional [message].
+ *
+ * @param ignoreCase `true` to ignore character case when comparing characters. By default `false`.
+ */
+@SinceKotlin("1.5")
+fun assertContains(charSequence: CharSequence, char: Char, ignoreCase: Boolean = false, message: String? = null) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the char sequence to contain the char.\nCharSequence <$charSequence>, char <$char>, ignoreCase <$ignoreCase>." },
+        charSequence.contains(char, ignoreCase)
+    )
+}
+
+/**
+ * Asserts that the [charSequence] contains the specified [other] char sequence as a substring, with an optional [message].
+ *
+ * @param ignoreCase `true` to ignore character case when comparing strings. By default `false`.
+ */
+@SinceKotlin("1.5")
+fun assertContains(charSequence: CharSequence, other: CharSequence, ignoreCase: Boolean = false, message: String? = null) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the char sequence to contain the substring.\nCharSequence <$charSequence>, substring <$other>, ignoreCase <$ignoreCase>." },
+        charSequence.contains(other, ignoreCase)
+    )
+}
+
+/** Asserts that the [charSequence] contains at least one match of the specified regular expression [regex], with an optional [message]. */
+@SinceKotlin("1.5")
+fun assertContains(charSequence: CharSequence, regex: Regex, message: String? = null) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the char sequence to contain the regular expression.\nCharSequence <$charSequence>, regex <$regex>." },
+        charSequence.contains(regex)
+    )
+}
+
+/**
  * Asserts that the [expected] iterable is *structurally* equal to the [actual] iterable,
  * i.e. contains the same number of the same elements in the same order, with an optional [message].
  *
