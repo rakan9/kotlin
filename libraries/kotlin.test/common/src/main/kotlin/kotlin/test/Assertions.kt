@@ -136,6 +136,44 @@ fun assertNull(actual: Any?, message: String? = null) {
     asserter.assertNull(message, actual)
 }
 
+/** Asserts that the [iterable] contains the specified [element], with an optional [message]. */
+@SinceKotlin("1.5")
+fun <@OnlyInputTypes T> assertContains(iterable: Iterable<T>, element: T, message: String? = null) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the collection to contain the element.\nCollection <$iterable>, element <$element>." },
+        iterable.contains(element)
+    )
+}
+
+/** Asserts that the [sequence] contains the specified [element], with an optional [message]. */
+@SinceKotlin("1.5")
+fun <@OnlyInputTypes T> assertContains(sequence: Sequence<T>, element: T, message: String? = null) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the sequence to contain the element.\nSequence <$sequence>, element <$element>." },
+        sequence.contains(element)
+    )
+}
+
+/** Asserts that the [array] contains the specified [element], with an optional [message]. */
+@SinceKotlin("1.5")
+fun <@OnlyInputTypes T> assertContains(array: Array<T>, element: T, message: String? = null) {
+    assertArrayContains(array, element, message, Array<*>::contains, Array<*>::contentToString)
+}
+
+@kotlin.internal.InlineOnly
+private inline fun <A> assertArrayContains(
+    array: A,
+    element: Any?,
+    message: String? = null,
+    contains: A.(Any?) -> Boolean,
+    crossinline contentToString: A.() -> String
+) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the array to contain the element.\nArray <${array.contentToString()}>, element <$element>." },
+        array.contains(element)
+    )
+}
+
 /**
  * Asserts that the [expected] iterable is *structurally* equal to the [actual] iterable,
  * i.e. contains the same number of the same elements in the same order, with an optional [message].
