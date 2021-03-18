@@ -225,7 +225,7 @@ fun assertContains(array: ULongArray, element: ULong, message: String? = null) {
 }
 
 @kotlin.internal.InlineOnly
-private inline fun <A, E> assertArrayContains(
+private inline fun <@OnlyInputTypes A, E> assertArrayContains(
     array: A,
     element: E,
     message: String? = null,
@@ -280,6 +280,12 @@ fun assertContains(range: UIntRange, value: UInt, message: String? = null) {
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(range: ULongRange, value: ULong, message: String? = null) {
     asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+}
+
+/** Asserts that the [map] contains the specified [key], with an optional [message]. */
+@SinceKotlin("1.5")
+fun <@OnlyInputTypes K, V> assertContains(map: Map<K, V>, key: K, message: String? = null) {
+    asserter.assertTrue({ messagePrefix(message) + "Expected the map to contain the key.\nMap <$map>, key <$key>." }, map.containsKey(key))
 }
 
 /**
