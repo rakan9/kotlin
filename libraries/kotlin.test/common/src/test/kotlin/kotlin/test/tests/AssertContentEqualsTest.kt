@@ -9,11 +9,6 @@ import kotlin.test.*
 
 class AssertContentEqualsTest {
 
-    private fun testFailureMessage(expected: String, block: () -> Unit) {
-        val exception = checkFailedAssertion(block)
-        assertEquals(expected, exception.message, "Wrong assertion message")
-    }
-
     @Test
     fun testAssertContentEqualsIterable() {
         val list: Iterable<Int> = listOf(1, 2, 3)
@@ -159,4 +154,9 @@ class AssertContentEqualsTest {
             assertContentEquals(array1, ULongArray(4) { 4uL - it.toUInt() })
         }
     }
+}
+
+internal fun testFailureMessage(expected: String, block: () -> Unit) {
+    val exception = checkFailedAssertion(block)
+    assertEquals(expected, exception.message, "Wrong assertion message")
 }
