@@ -241,44 +241,49 @@ private inline fun <@OnlyInputTypes A, E> assertArrayContains(
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: IntRange, value: Int, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, IntRange::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: LongRange, value: Long, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, LongRange::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: ClosedFloatingPointRange<Float>, value: Float, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, ClosedFloatingPointRange<Float>::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: ClosedFloatingPointRange<Double>, value: Double, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, ClosedFloatingPointRange<Double>::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: CharRange, value: Char, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, CharRange::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(range: UIntRange, value: UInt, message: String? = null) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+    assertRangeContains(range, value, message, UIntRange::contains)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(range: ULongRange, value: ULong, message: String? = null) {
+    assertRangeContains(range, value, message, ULongRange::contains)
+}
+
+@kotlin.internal.InlineOnly
+private inline fun <R, V> assertRangeContains(range: R, value: V, message: String? = null, contains: R.(V) -> Boolean) {
     asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
 }
 
