@@ -65,12 +65,23 @@ class AssertContainsTest {
     }
 
     @Test
+    fun testAssertContainsIntRange() {
+        val range = -5..5
+
+        assertContains(range, 0)
+
+        testFailureMessage("Expected the range <-5..5> to contain the value <10>.") {
+            assertContains(range, 10)
+        }
+    }
+
+    @Test
     fun testAssertContainsCharRange() {
         val range = 'a'..'y'
 
         assertContains(range, 'f')
 
-        testFailureMessage("Expected the range <$range> to contain the value <A>.") {
+        testFailureMessage("Expected the range <a..y> to contain the value <A>.") {
             assertContains(range, 'A')
         }
     }
