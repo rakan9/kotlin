@@ -52,6 +52,17 @@ class AssertContainsTest {
         }
     }
 
+    @Test
+    fun testAssertContainsCharArray() {
+        val array = charArrayOf('x', 'y', 'z')
+
+        assertContains(array, 'z')
+
+        testFailureMessage("Expected the array to contain the element.\nArray <${array.contentToString()}>, element <5>.") {
+            assertContains(array, '5')
+        }
+    }
+
     @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun testAssertContainsUnsignedArray() {

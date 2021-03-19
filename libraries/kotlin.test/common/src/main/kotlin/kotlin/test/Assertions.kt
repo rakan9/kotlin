@@ -157,71 +157,71 @@ fun <@OnlyInputTypes T> assertContains(sequence: Sequence<T>, element: T, messag
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun <@OnlyInputTypes T> assertContains(array: Array<T>, element: T, message: String? = null) {
-    assertArrayContains(array, element, message, Array<T>::contains, Array<T>::contentToString)
+    assertArrayContains(array, element, message, Array<T>::contains, Array<T>::contentToString, Any?::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: ByteArray, element: Byte, message: String? = null) {
-    assertArrayContains(array, element, message, ByteArray::contains, ByteArray::contentToString)
+    assertArrayContains(array, element, message, ByteArray::contains, ByteArray::contentToString, Byte::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: ShortArray, element: Short, message: String? = null) {
-    assertArrayContains(array, element, message, ShortArray::contains, ShortArray::contentToString)
+    assertArrayContains(array, element, message, ShortArray::contains, ShortArray::contentToString, Short::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: IntArray, element: Int, message: String? = null) {
-    assertArrayContains(array, element, message, IntArray::contains, IntArray::contentToString)
+    assertArrayContains(array, element, message, IntArray::contains, IntArray::contentToString, Int::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: LongArray, element: Long, message: String? = null) {
-    assertArrayContains(array, element, message, LongArray::contains, LongArray::contentToString)
+    assertArrayContains(array, element, message, LongArray::contains, LongArray::contentToString, Long::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: BooleanArray, element: Boolean, message: String? = null) {
-    assertArrayContains(array, element, message, BooleanArray::contains, BooleanArray::contentToString)
+    assertArrayContains(array, element, message, BooleanArray::contains, BooleanArray::contentToString, Boolean::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(array: CharArray, element: Char, message: String? = null) {
-    assertArrayContains(array, element, message, CharArray::contains, CharArray::contentToString)
+    assertArrayContains(array, element, message, CharArray::contains, CharArray::contentToString, Char::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(array: UByteArray, element: UByte, message: String? = null) {
-    assertArrayContains(array, element, message, UByteArray::contains, UByteArray::contentToString)
+    assertArrayContains(array, element, message, UByteArray::contains, UByteArray::contentToString, UByte::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(array: UShortArray, element: UShort, message: String? = null) {
-    assertArrayContains(array, element, message, UShortArray::contains, UShortArray::contentToString)
+    assertArrayContains(array, element, message, UShortArray::contains, UShortArray::contentToString, UShort::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(array: UIntArray, element: UInt, message: String? = null) {
-    assertArrayContains(array, element, message, UIntArray::contains, UIntArray::contentToString)
+    assertArrayContains(array, element, message, UIntArray::contains, UIntArray::contentToString, UInt::toString)
 }
 
 /** Asserts that the [array] contains the specified [element], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(array: ULongArray, element: ULong, message: String? = null) {
-    assertArrayContains(array, element, message, ULongArray::contains, ULongArray::contentToString)
+    assertArrayContains(array, element, message, ULongArray::contains, ULongArray::contentToString, ULong::toString)
 }
 
 @kotlin.internal.InlineOnly
@@ -230,10 +230,11 @@ private inline fun <@OnlyInputTypes A, E> assertArrayContains(
     element: E,
     message: String? = null,
     contains: A.(E) -> Boolean,
-    crossinline contentToString: A.() -> String
+    crossinline contentToString: A.() -> String,
+    crossinline toString: E.() -> String
 ) {
     asserter.assertTrue(
-        { messagePrefix(message) + "Expected the array to contain the element.\nArray <${array.contentToString()}>, element <$element>." },
+        { messagePrefix(message) + "Expected the array to contain the element.\nArray <${array.contentToString()}>, element <${element.toString()}>." },
         array.contains(element)
     )
 }
@@ -241,50 +242,59 @@ private inline fun <@OnlyInputTypes A, E> assertArrayContains(
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: IntRange, value: Int, message: String? = null) {
-    assertRangeContains(range, value, message, IntRange::contains)
+    assertRangeContains(range, value, message, IntRange::contains, Int::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: LongRange, value: Long, message: String? = null) {
-    assertRangeContains(range, value, message, LongRange::contains)
+    assertRangeContains(range, value, message, LongRange::contains, Long::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: ClosedFloatingPointRange<Float>, value: Float, message: String? = null) {
-    assertRangeContains(range, value, message, ClosedFloatingPointRange<Float>::contains)
+    assertRangeContains(range, value, message, ClosedFloatingPointRange<Float>::contains, Float::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: ClosedFloatingPointRange<Double>, value: Double, message: String? = null) {
-    assertRangeContains(range, value, message, ClosedFloatingPointRange<Double>::contains)
+    assertRangeContains(range, value, message, ClosedFloatingPointRange<Double>::contains, Double::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 fun assertContains(range: CharRange, value: Char, message: String? = null) {
-    assertRangeContains(range, value, message, CharRange::contains)
+    assertRangeContains(range, value, message, CharRange::contains, Char::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(range: UIntRange, value: UInt, message: String? = null) {
-    assertRangeContains(range, value, message, UIntRange::contains)
+    assertRangeContains(range, value, message, UIntRange::contains, UInt::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
 @OptIn(ExperimentalUnsignedTypes::class)
 fun assertContains(range: ULongRange, value: ULong, message: String? = null) {
-    assertRangeContains(range, value, message, ULongRange::contains)
+    assertRangeContains(range, value, message, ULongRange::contains, ULong::toString)
 }
 
 @kotlin.internal.InlineOnly
-private inline fun <R, V> assertRangeContains(range: R, value: V, message: String? = null, contains: R.(V) -> Boolean) {
-    asserter.assertTrue({ messagePrefix(message) + "Expected the range <$range> to contain the value <$value>." }, range.contains(value))
+private inline fun <R, V> assertRangeContains(
+    range: R,
+    value: V,
+    message: String? = null,
+    contains: R.(V) -> Boolean,
+    crossinline toString: V.() -> String
+) {
+    asserter.assertTrue(
+        { messagePrefix(message) + "Expected the range <$range> to contain the value <${value.toString()}>." },
+        range.contains(value)
+    )
 }
 
 /** Asserts that the [map] contains the specified [key], with an optional [message]. */
