@@ -23,8 +23,8 @@ fun test1() {
         decode { string ->
             Foo(string)
         }
-        encode { <!CANNOT_INFER_PARAMETER_TYPE!>value<!> ->
-            <!DEBUG_INFO_ELEMENT_WITH_ERROR_TYPE!>value<!>
+        encode { value ->
+            value
         }
     }
 }
@@ -34,19 +34,19 @@ fun test2() {
         decode { string ->
             Foo(string)
         }
-        <!NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER!>encode2<!> { <!CANNOT_INFER_PARAMETER_TYPE!>value<!> ->
-            <!DEBUG_INFO_ELEMENT_WITH_ERROR_TYPE!>value<!>
+        <!NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER!>encode2<!> { value ->
+            value
         }
     }
 }
 
 fun test3() {
-    <!NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER!>makeCodec<!> {
+    makeCodec {
         decode { string ->
             Foo(string)
         }
-        encode3 { <!CANNOT_INFER_PARAMETER_TYPE!>value<!> ->
-            <!DEBUG_INFO_ELEMENT_WITH_ERROR_TYPE!>value<!>
+        encode3 { value ->
+            value
         }
     }
 }
@@ -56,8 +56,8 @@ fun test4() {
         decode { string ->
             Foo(string)
         }
-        <!NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER!>encode4<!> { <!CANNOT_INFER_PARAMETER_TYPE!>value<!> ->
-            <!DEBUG_INFO_ELEMENT_WITH_ERROR_TYPE!>value<!>
+        <!NEW_INFERENCE_NO_INFORMATION_FOR_PARAMETER!>encode4<!> { value ->
+            value
         }
     }
 }
@@ -68,8 +68,8 @@ fun test5() {
             Foo(string)
         }
         <!DEBUG_INFO_EXPRESSION_TYPE("kotlin.reflect.KFunction1<TypeVariable(Value).(value: kotlin.String) -> kotlin.Unit, kotlin.Unit>")!>::encode<!>
-        <!DEBUG_INFO_EXPRESSION_TYPE("Type is unknown"), TYPE_INFERENCE_POSTPONED_VARIABLE_IN_RECEIVER_TYPE!>::<!TYPE_INFERENCE_INCORPORATION_ERROR!>encode2<!><!>
+        <!DEBUG_INFO_EXPRESSION_TYPE("kotlin.reflect.KFunction1<kotlin.Any.(value: kotlin.String) -> kotlin.Unit, kotlin.Unit>")!>::<!TYPE_INFERENCE_INCORPORATION_ERROR!>encode2<!><!>
         <!DEBUG_INFO_EXPRESSION_TYPE("kotlin.reflect.KFunction1<A<A<TypeVariable(Value)>>.(value: kotlin.String) -> kotlin.Unit, kotlin.Unit>")!>::encode3<!>
-        <!DEBUG_INFO_EXPRESSION_TYPE("Type is unknown"), TYPE_INFERENCE_POSTPONED_VARIABLE_IN_RECEIVER_TYPE!>::<!TYPE_INFERENCE_INCORPORATION_ERROR!>encode4<!><!>
+        <!DEBUG_INFO_EXPRESSION_TYPE("kotlin.reflect.KFunction1<A<A<kotlin.Any>>.(value: kotlin.String) -> kotlin.Unit, kotlin.Unit>")!>::<!TYPE_INFERENCE_INCORPORATION_ERROR!>encode4<!><!>
     }
 }

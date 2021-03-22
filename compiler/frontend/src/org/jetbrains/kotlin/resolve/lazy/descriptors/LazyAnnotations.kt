@@ -113,8 +113,7 @@ class LazyAnnotationDescriptor(
         if (!resolutionResults.isSingleResult) return@createLazyValue emptyMap<Name, ConstantValue<*>>()
 
         resolutionResults.resultingCall.valueArguments.mapNotNull { (valueParameter, resolvedArgument) ->
-            if (resolvedArgument == null) null
-            else c.annotationResolver.getAnnotationArgumentValue(c.trace, valueParameter, resolvedArgument)?.let { value ->
+            c.annotationResolver.getAnnotationArgumentValue(c.trace, valueParameter, resolvedArgument)?.let { value ->
                 valueParameter.name to value
             }
         }.toMap()

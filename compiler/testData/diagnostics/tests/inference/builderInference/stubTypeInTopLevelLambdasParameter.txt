@@ -1,0 +1,12 @@
+package
+
+@[ERROR : OptIn] /* annotation class not found */ public fun </*0*/ S> generate(/*0*/ @[ERROR : BuilderInference] /* annotation class not found */ g: suspend GenericController<S>.((S) -> kotlin.Unit) -> kotlin.Unit): kotlin.Unit
+public fun main(): kotlin.Unit
+
+public final class GenericController</*0*/ T> {
+    public constructor GenericController</*0*/ T>()
+    public final fun consume(/*0*/ t: T): kotlin.Unit
+    public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
+    public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
+    public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
+}

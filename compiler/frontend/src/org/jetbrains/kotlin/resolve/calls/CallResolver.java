@@ -28,8 +28,10 @@ import org.jetbrains.kotlin.resolve.calls.callResolverUtil.ResolveArgumentsMode;
 import org.jetbrains.kotlin.resolve.calls.callUtil.CallUtilKt;
 import org.jetbrains.kotlin.resolve.calls.components.InferenceSession;
 import org.jetbrains.kotlin.resolve.calls.context.*;
+import org.jetbrains.kotlin.resolve.calls.inference.CoroutineInferenceSession;
 import org.jetbrains.kotlin.resolve.calls.inference.CoroutineInferenceUtilKt;
 import org.jetbrains.kotlin.resolve.calls.model.MutableDataFlowInfoForArguments;
+import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall;
 import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResults;
 import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResultsImpl;
 import org.jetbrains.kotlin.resolve.calls.smartcasts.DataFlowInfo;
@@ -652,6 +654,16 @@ public class CallResolver {
         CallCandidateResolutionContext<D> candidateContext = CallCandidateResolutionContext.createForCallBeingAnalyzed(
                 results.getResultingCall(), context, tracing);
         genericCandidateResolver.completeTypeInferenceDependentOnFunctionArgumentsForCall(candidateContext);
+
+        boolean isNewInferenceEnabled = languageVersionSettings.supportsFeature(LanguageFeature.NewInference);
+
+        if (isNewInferenceEnabled && results.isSingleResult()) {
+            ResolvedCall<?> resolvedCall = results.getResultingCall();
+            boolean isCallableReference = CallUtilKt.isCallableReference(resolvedCall.getCall().getCallElement());
+            if (isNewInferenceEnabled && context.inferenceSession instanceof CoroutineInferenceSession && isCallableReference) {
+                ((CoroutineInferenceSession) context.inferenceSession).addCallableReferenceResolvedThroughOldInference(resolvedCall);
+            }
+        }
     }
 
     private static <F extends CallableDescriptor> void cacheResults(

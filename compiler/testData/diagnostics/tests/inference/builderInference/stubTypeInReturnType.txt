@@ -1,6 +1,6 @@
 package
 
-@[ERROR : OptIn] /* annotation class not found */ public fun </*0*/ Value> makeCodec(/*0*/ @[ERROR : BuilderInference] /* annotation class not found */ configure: CodecBuilder<Value>.() -> kotlin.Unit): kotlin.Unit
+@kotlin.OptIn(markerClass = {kotlin.experimental.ExperimentalTypeInference::class}) public fun </*0*/ Value> makeCodec(/*0*/ @kotlin.BuilderInference configure: CodecBuilder<Value>.() -> kotlin.Unit): kotlin.Unit
 public fun </*0*/ K> materialize(): K
 public fun test1(): kotlin.Unit
 public fun </*0*/ Value> transform(/*0*/ x: CodecBuilder<Value>): Foo<Value>

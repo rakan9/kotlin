@@ -12313,6 +12313,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
                 }
 
                 @Test
+                @TestMetadata("overrides.kt")
+                public void testOverrides() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/overrides.kt");
+                }
+
+                @Test
                 @TestMetadata("simpleLambdaInCallWithAnotherLambdaWithBuilderInference.kt")
                 public void testSimpleLambdaInCallWithAnotherLambdaWithBuilderInference() throws Exception {
                     runTest("compiler/testData/diagnostics/tests/inference/builderInference/simpleLambdaInCallWithAnotherLambdaWithBuilderInference.kt");
@@ -12361,10 +12367,23 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
                 }
 
                 @Test
+                @TestMetadata("stubTypeInCallableReferencesReturnType.kt")
+                public void testStubTypeInCallableReferencesReturnType() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInCallableReferencesReturnType.kt");
+                }
+
+                @Test
                 @TestMetadata("stubTypeInLambdasParameter.kt")
                 public void testStubTypeInLambdasParameter() throws Exception {
                     runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInLambdasParameter.kt");
                 }
+
+                @Test
+                @TestMetadata("stubTypeInLambdasParameter2.kt")
+                public void testStubTypeInLambdasParameter2() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInLambdasParameter2.kt");
+                }
+
                 @Test
                 @TestMetadata("stubTypeInLambdasReceiver.kt")
                 public void testStubTypeInLambdasReceiver() throws Exception {
@@ -12372,9 +12391,45 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
                 }
 
                 @Test
+                @TestMetadata("stubTypeInOneOfBranchesOfIf.kt")
+                public void testStubTypeInOneOfBranchesOfIf() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInOneOfBranchesOfIf.kt");
+                }
+
+                @Test
                 @TestMetadata("stubTypeInReturnType.kt")
                 public void testStubTypeInReturnType() throws Exception {
                     runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInReturnType.kt");
+                }
+
+                @Test
+                @TestMetadata("stubTypeInTopLevelLambdasParameter.kt")
+                public void testStubTypeInTopLevelLambdasParameter() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInTopLevelLambdasParameter.kt");
+                }
+
+                @Test
+                @TestMetadata("stubTypeInTopLevelLambdasParameter2.kt")
+                public void testStubTypeInTopLevelLambdasParameter2() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInTopLevelLambdasParameter2.kt");
+                }
+
+                @Test
+                @TestMetadata("stubTypeInTopLevelLambdasParameter3.kt")
+                public void testStubTypeInTopLevelLambdasParameter3() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInTopLevelLambdasParameter3.kt");
+                }
+
+                @Test
+                @TestMetadata("stubTypeInTopLevelLambdasParameter4.kt")
+                public void testStubTypeInTopLevelLambdasParameter4() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/stubTypeInTopLevelLambdasParameter4.kt");
+                }
+
+                @Test
+                @TestMetadata("thisAsReceiver.kt")
+                public void testThisAsReceiver() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/builderInference/thisAsReceiver.kt");
                 }
             }
 

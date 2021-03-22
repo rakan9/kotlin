@@ -27,11 +27,13 @@ import org.jetbrains.kotlin.resolve.calls.CallCompleter
 import org.jetbrains.kotlin.resolve.calls.callResolverUtil.ResolveArgumentsMode.RESOLVE_FUNCTION_ARGUMENTS
 import org.jetbrains.kotlin.resolve.calls.callResolverUtil.getEffectiveExpectedType
 import org.jetbrains.kotlin.resolve.calls.callResolverUtil.hasUnknownFunctionParameter
+import org.jetbrains.kotlin.resolve.calls.callUtil.isCallableReference
 import org.jetbrains.kotlin.resolve.calls.context.*
 import org.jetbrains.kotlin.resolve.calls.inference.constraintPosition.ConstraintPositionKind
 import org.jetbrains.kotlin.resolve.calls.model.*
 import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResultsImpl
 import org.jetbrains.kotlin.resolve.calls.tasks.TracingStrategy
+import org.jetbrains.kotlin.resolve.calls.tower.NewAbstractResolvedCall
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasBuilderInferenceAnnotation
 import org.jetbrains.kotlin.resolve.descriptorUtil.isExtension
@@ -317,20 +319,56 @@ fun isApplicableCallForBuilderInference(languageVersionSettings: LanguageVersion
         return isGoodCallForOldCoroutines(descriptor)
     }
 
-    if (descriptor.isExtension && !descriptor.hasBuilderInferenceAnnotation()) {
-        return descriptor.extensionReceiverParameter?.type?.containsStubType() == false
+    val doesExtensionReceiverContainStubType = descriptor.extensionReceiverParameter?.type?.containsStubType() == true
+    val doesSomeParameterContainStubType = descriptor.valueParameters.any { it.type.containsStubType() }
+    val doesReturnTypeContainStubType = descriptor.returnType?.containsStubType() == true
+
+    if (descriptor.isExtension) {
+        val isCallInapplicable =
+            (doesExtensionReceiverContainStubType || doesSomeParameterContainStubType || doesReturnTypeContainStubType) && !descriptor.hasBuilderInferenceAnnotation()
+        // Extension functions which have stub type in the input types and no BuilderInference annotations, are forbidden
+        if (isCallInapplicable) return false
     }
 
-    val returnType = descriptor.returnType ?: return false
-    val doesReturnTypeContainStubType = returnType.containsStubType()
-//    val parametersContainsStubTypes = descriptor.valueParameters.any { it.type.containsStubType() }
-//    val extensionReceiverContainsStubTypes = descriptor.extensionReceiverParameter?.type?.containsStubType() == true
-    val doLambdasParametersContainStubType = resolvedAtom?.areThereLambdasWithStubTypeInParameterOrReceiver() == true
+    if (doesReturnTypeContainStubType) {
+        // Forbid pure producers like `materialize()` to prevent leaking stub type variables
+        return false
+    }
 
-//    val a = doesReturnTypeContainStubType && (parametersContainsStubTypes || extensionReceiverContainsStubTypes)
+    when (resolvedCall) {
+        // checks for the new type inference calls
+        is NewAbstractResolvedCall<*> -> {
+            if (resolvedCall.resolvedCallAtom.areThereLambdasWithStubTypeInParameterOrReceiver()) {
+                // Forbid `TypeVariable(T).() -> Unit` or `(TypeVariable(T)) -> Unit` to prevent leaking stub type variables though lambda's parameter
+                return false
+            }
 
-    return (!doesReturnTypeContainStubType && !doLambdasParametersContainStubType)
+            if (resolvedCall.resolvedCallAtom.areThereCallableReferencesWithStubTypeInReturnType()) {
+                // Forbid `TypeVariable(T).() -> Unit` or `(TypeVariable(T)) -> Unit` to prevent leaking stub type variables though lambda's parameter
+                return false
+            }
+        }
+        is ResolvedCall<*> -> {
+            if (resolvedCall.call.isCallableReference()) {
+            }
+        }
+    }
+
+    return true
 }
+
+fun ResolvedAtom.areThereCallableReferencesWithStubTypeInReturnType(): Boolean {
+    val atoms = subResolvedAtoms ?: return false
+
+    return atoms.any { atom ->
+        val areThereParametersOfStubType = atom is ResolvedLambdaAtom && atom.parameters.any { it is StubType }
+        val isReceiverOfStubType = atom is ResolvedLambdaAtom && atom.receiver is StubType
+        areThereParametersOfStubType || isReceiverOfStubType || atom.areThereLambdasWithStubTypeInParameterOrReceiver()
+    }
+}
+
+fun KotlinType.areThereStubTypeInReturnTypeOfFuntionalType() =
+    !isBuiltinFunctionalType || getReturnTypeFromFunctionType().contains { it is StubType }
 
 private fun isGoodCallForOldCoroutines(resultingDescriptor: CallableDescriptor): Boolean {
     val returnType = resultingDescriptor.returnType ?: return false

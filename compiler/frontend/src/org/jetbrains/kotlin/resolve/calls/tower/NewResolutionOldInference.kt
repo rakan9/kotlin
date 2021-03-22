@@ -211,37 +211,17 @@ class NewResolutionOldInference(
             )
         }
 
-        candidates =
-            candidateInterceptor.interceptResolvedCandidates(candidates, context, candidateResolver, callResolver, name, kind, tracing)
+        candidates = candidateInterceptor.interceptResolvedCandidates(candidates, context, candidateResolver, callResolver, name, kind, tracing)
 
         if (candidates.isEmpty()) {
             if (reportAdditionalDiagnosticIfNoCandidates(context, nameToResolve, kind, scopeTower, detailedReceiver)) {
                 return OverloadResolutionResultsImpl.nameNotFound()
             }
         }
+
         val overloadResults = convertToOverloadResults<D>(candidates, tracing, context)
-
-        checkBuilderInferenceCall(overloadResults, context, tracing)
-
+        coroutineInferenceSupport.checkCoroutineCalls(context, tracing, overloadResults)
         return overloadResults
-    }
-
-    private fun checkBuilderInferenceCall(
-        overloadResults: OverloadResolutionResultsImpl<*>,
-        context: BasicCallResolutionContext,
-        tracing: TracingStrategy
-    ) {
-        val resultingResolvedCall = overloadResults.takeIf { it.isSingleResult }?.resultingCall
-        val resultingCall = resultingResolvedCall?.call
-        val isNewInferenceEnabled = languageVersionSettings.supportsFeature(LanguageFeature.NewInference)
-
-        // We add callable references separately into an inference session storage as they are still resolved through the old type inference
-        // TODO: remove after KT-45034 is fixed
-        if (isNewInferenceEnabled && context.inferenceSession is CoroutineInferenceSession && resultingCall?.callElement?.isCallableReference() == true) {
-            context.inferenceSession.addCallableReferenceResolvedThroughOldInference(resultingResolvedCall)
-        } else {
-            coroutineInferenceSupport.checkCoroutineCalls(context, tracing, overloadResults)
-        }
     }
 
     fun <D : CallableDescriptor> runResolutionForGivenCandidates(
