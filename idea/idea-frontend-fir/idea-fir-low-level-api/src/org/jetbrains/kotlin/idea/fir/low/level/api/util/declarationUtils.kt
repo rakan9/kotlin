@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.containingClass
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.realPsi
+import org.jetbrains.kotlin.fir.renderWithType
 import org.jetbrains.kotlin.fir.resolve.providers.FirSymbolProvider
 import org.jetbrains.kotlin.idea.fir.low.level.api.api.InvalidFirElementTypeException
 import org.jetbrains.kotlin.idea.fir.low.level.api.element.builder.getNonLocalContainingOrThisDeclaration
@@ -136,10 +137,13 @@ val FirDeclaration.isGeneratedDeclaration
     get() = realPsi == null
 
 internal fun FirDeclaration.collectDesignation(): List<FirDeclaration> {
-    require(this is FirCallableDeclaration<*>)
     val designation = mutableListOf<FirDeclaration>()
     val firProvider = session.firIdeProvider
-    var containingClassId = containingClass()?.classId
+    var containingClassId = when(this) {
+        is FirCallableDeclaration<*> -> containingClass()?.classId
+        is FirClassLikeDeclaration<*> -> symbol.classId.outerClassId
+        else -> error("Invalid declaration ${renderWithType()}")
+    }
     while (containingClassId != null) {
         val klass = firProvider.getFirClassifierByFqName(containingClassId)
         if (klass != null) {

@@ -43,7 +43,7 @@ internal class FileStructure(
         val structureElement = structureElements.compute(declaration) { _, structureElement ->
             when {
                 structureElement == null -> createStructureElement(declaration)
-                structureElement is ReanalyzableStructureElement<KtDeclaration> && !structureElement.isUpToDate() -> {
+                structureElement is ReanalyzableStructureElement<KtDeclaration, *> && !structureElement.isUpToDate() -> {
                     structureElement.reanalyze(
                         newKtDeclaration = declaration as KtDeclaration,
                         cache = moduleFileCache,
@@ -89,7 +89,7 @@ internal class FileStructure(
             override fun visitDeclaration(dcl: KtDeclaration) {
                 val structureElement = getStructureElementFor(dcl)
                 structureElements += structureElement
-                if (structureElement !is ReanalyzableStructureElement<*>) {
+                if (structureElement !is ReanalyzableStructureElement<*, *>) {
                     dcl.acceptChildren(this)
                 }
             }
