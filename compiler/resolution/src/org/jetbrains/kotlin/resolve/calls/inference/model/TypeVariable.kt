@@ -36,7 +36,11 @@ import org.jetbrains.kotlin.types.model.TypeVariableTypeConstructorMarker
 import org.jetbrains.kotlin.types.refinement.TypeRefinement
 
 
-class TypeVariableTypeConstructor(private val builtIns: KotlinBuiltIns, val debugName: String) : TypeConstructor,
+class TypeVariableTypeConstructor(
+    private val builtIns: KotlinBuiltIns,
+    val debugName: String,
+    override val typeParameter: TypeParameterDescriptor?
+) : TypeConstructor,
     NewTypeVariableConstructor, TypeVariableTypeConstructorMarker {
     override fun getParameters(): List<TypeParameterDescriptor> = emptyList()
     override fun getSupertypes(): Collection<KotlinType> = emptyList()
@@ -54,8 +58,8 @@ class TypeVariableTypeConstructor(private val builtIns: KotlinBuiltIns, val debu
     var isContainedInInvariantOrContravariantPositions: Boolean = false
 }
 
-sealed class NewTypeVariable(builtIns: KotlinBuiltIns, name: String) : TypeVariableMarker {
-    val freshTypeConstructor = TypeVariableTypeConstructor(builtIns, name)
+sealed class NewTypeVariable(builtIns: KotlinBuiltIns, name: String, typeParameter: TypeParameterDescriptor? = null) : TypeVariableMarker {
+    val freshTypeConstructor = TypeVariableTypeConstructor(builtIns, name, typeParameter)
 
     // member scope is used if we have receiver with type TypeVariable(T)
     // todo add to member scope methods from supertypes for type variable
@@ -75,7 +79,7 @@ fun TypeConstructor.typeForTypeVariable(): SimpleType {
 
 class TypeVariableFromCallableDescriptor(
     val originalTypeParameter: TypeParameterDescriptor
-) : NewTypeVariable(originalTypeParameter.builtIns, originalTypeParameter.name.identifier) {
+) : NewTypeVariable(originalTypeParameter.builtIns, originalTypeParameter.name.identifier, originalTypeParameter) {
     override fun hasOnlyInputTypesAnnotation(): Boolean = originalTypeParameter.hasOnlyInputTypesAnnotation()
 }
 
