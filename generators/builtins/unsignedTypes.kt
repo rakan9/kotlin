@@ -25,10 +25,6 @@ fun generateUnsignedTypes(
     for (type in listOf(UnsignedType.UINT, UnsignedType.ULONG)) {
         generate(File(targetDir, "kotlin/${type.capitalized}Range.kt")) { UnsignedRangeGenerator(type, it) }
     }
-
-    generate(File(targetDir, "kotlin/UIterators.kt"), ::UnsignedIteratorsGenerator)
-
-
 }
 
 class UnsignedTypeGenerator(val type: UnsignedType, out: PrintWriter) : BuiltInsSourceGenerator(out) {
@@ -445,23 +441,6 @@ class UnsignedTypeGenerator(val type: UnsignedType, out: PrintWriter) : BuiltIns
 }
 
 
-// TODO: reuse generator
-class UnsignedIteratorsGenerator(out: PrintWriter) : BuiltInsSourceGenerator(out) {
-    override fun getPackage() = "kotlin.collections"
-    override fun generateBody() {
-        for (type in UnsignedType.values()) {
-            val s = type.capitalized
-            out.println("/** An iterator over a sequence of values of type `$s`. */")
-            out.println("internal abstract class ${s}Iterator : Iterator<$s> {")
-            out.println("    final override fun next() = next$s()")
-            out.println()
-            out.println("    /** Returns the next value in the sequence without boxing. */")
-            out.println("    public abstract fun next$s(): $s")
-            out.println("}")
-            out.println()
-        }
-    }
-}
 
 class UnsignedArrayGenerator(val type: UnsignedType, out: PrintWriter) : BuiltInsSourceGenerator(out) {
     val elementType = type.capitalized
@@ -508,10 +487,10 @@ class UnsignedArrayGenerator(val type: UnsignedType, out: PrintWriter) : BuiltIn
     /** Creates an iterator over the elements of the array. */
     public override operator fun iterator(): kotlin.collections.Iterator<$elementType> = Iterator(storage)
 
-    private class Iterator(private val array: $storageArrayType) : ${elementType}Iterator() {
+    private class Iterator(private val array: $storageArrayType) : kotlin.collections.Iterator<${elementType}> {
         private var index = 0
         override fun hasNext() = index < array.size
-        override fun next$elementType() = if (index < array.size) array[index++].to$elementType() else throw NoSuchElementException(index.toString())
+        override fun next() = if (index < array.size) array[index++].to$elementType() else throw NoSuchElementException(index.toString())
     }
 
     override fun contains(element: $elementType): Boolean {
@@ -675,7 +654,7 @@ internal constructor(
  * @property step the number by which the value is incremented on each step.
  */
 @SinceKotlin("1.3")
-private class ${elementType}ProgressionIterator(first: $elementType, last: $elementType, step: $stepType) : ${elementType}Iterator() {
+private class ${elementType}ProgressionIterator(first: $elementType, last: $elementType, step: $stepType) : Iterator<${elementType}> {
     private val finalElement = last
     private var hasNext: Boolean = if (step > 0) first <= last else first >= last
     private val step = step.to$elementType() // use 2-complement math for negative steps
@@ -683,7 +662,7 @@ private class ${elementType}ProgressionIterator(first: $elementType, last: $elem
 
     override fun hasNext(): Boolean = hasNext
 
-    override fun next$elementType(): $elementType {
+    override fun next(): $elementType {
         val value = next
         if (value == finalElement) {
             if (!hasNext) throw kotlin.NoSuchElementException()
