@@ -114,7 +114,7 @@ internal class FileStructure(
             towerDataContextCollector = collector
         )
         return moduleFileCache.firFileLockProvider.withReadLock(firFile) {
-            FileElementFactory.createFileStructureElement(firDeclaration, declaration, firFile)
+            FileElementFactory.createFileStructureElement(firDeclaration, declaration, firFile, moduleFileCache.firFileLockProvider)
         }
     }
 
@@ -130,6 +130,7 @@ internal class FileStructure(
             RootStructureElement(
                 firFile,
                 container,
+                moduleFileCache.firFileLockProvider,
             )
         }
         is KtDeclaration -> createDeclarationStructure(container)
