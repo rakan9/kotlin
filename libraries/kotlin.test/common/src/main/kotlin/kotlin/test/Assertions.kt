@@ -253,14 +253,14 @@ fun assertContains(range: LongRange, value: Long, message: String? = null) {
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
-fun assertContains(range: ClosedFloatingPointRange<Float>, value: Float, message: String? = null) {
-    assertRangeContains(range, value, message, ClosedFloatingPointRange<Float>::contains, Float::toString)
+fun assertContains(range: ClosedRange<Float>, value: Float, message: String? = null) {
+    assertRangeContains(range, value, message, ClosedRange<Float>::contains, Float::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
 @SinceKotlin("1.5")
-fun assertContains(range: ClosedFloatingPointRange<Double>, value: Double, message: String? = null) {
-    assertRangeContains(range, value, message, ClosedFloatingPointRange<Double>::contains, Double::toString)
+fun assertContains(range: ClosedRange<Double>, value: Double, message: String? = null) {
+    assertRangeContains(range, value, message, ClosedRange<Double>::contains, Double::toString)
 }
 
 /** Asserts that the [range] contains the specified [value], with an optional [message]. */
