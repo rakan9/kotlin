@@ -155,8 +155,3 @@ class AssertContentEqualsTest {
         }
     }
 }
-
-internal fun testFailureMessage(expected: String, block: () -> Unit) {
-    val exception = checkFailedAssertion(block)
-    assertEquals(expected, exception.message, "Wrong assertion message")
-}
