@@ -192,8 +192,11 @@ class PerformanceSuite {
             fun initSdk(rootDisposable: Disposable): Sdk {
                 return runWriteAction {
                     val jdkTableImpl = JavaAwareProjectJdkTableImpl.getInstanceEx()
-                    val homePath = "/usr/lib/jvm/java-11-amazon-corretto"
-
+                    val homePath = if (jdkTableImpl.internalJdk.homeDirectory!!.name == "jre") {
+                        jdkTableImpl.internalJdk.homeDirectory!!.parent.path
+                    } else {
+                        jdkTableImpl.internalJdk.homePath!!
+                    }
                     val javaSdk = JavaSdk.getInstance()
                     val jdk = javaSdk.createJdk("1.8", homePath)
                     val internal = javaSdk.createJdk("IDEA jdk", homePath)
