@@ -21295,6 +21295,8 @@ public inline fun CharArray.scanReduceIndexed(operation: (index: Int, acc: Char,
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun <T> Array<out T>.sumBy(selector: (T) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21306,6 +21308,8 @@ public inline fun <T> Array<out T>.sumBy(selector: (T) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun ByteArray.sumBy(selector: (Byte) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21317,6 +21321,8 @@ public inline fun ByteArray.sumBy(selector: (Byte) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun ShortArray.sumBy(selector: (Short) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21328,6 +21334,8 @@ public inline fun ShortArray.sumBy(selector: (Short) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun IntArray.sumBy(selector: (Int) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21339,6 +21347,8 @@ public inline fun IntArray.sumBy(selector: (Int) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun LongArray.sumBy(selector: (Long) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21350,6 +21360,8 @@ public inline fun LongArray.sumBy(selector: (Long) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun FloatArray.sumBy(selector: (Float) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21361,6 +21373,8 @@ public inline fun FloatArray.sumBy(selector: (Float) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun DoubleArray.sumBy(selector: (Double) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21372,6 +21386,8 @@ public inline fun DoubleArray.sumBy(selector: (Double) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun BooleanArray.sumBy(selector: (Boolean) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21383,6 +21399,8 @@ public inline fun BooleanArray.sumBy(selector: (Boolean) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun CharArray.sumBy(selector: (Char) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -21394,6 +21412,8 @@ public inline fun CharArray.sumBy(selector: (Char) -> Int): Int {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun <T> Array<out T>.sumByDouble(selector: (T) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21405,6 +21425,8 @@ public inline fun <T> Array<out T>.sumByDouble(selector: (T) -> Double): Double 
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun ByteArray.sumByDouble(selector: (Byte) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21416,6 +21438,8 @@ public inline fun ByteArray.sumByDouble(selector: (Byte) -> Double): Double {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun ShortArray.sumByDouble(selector: (Short) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21427,6 +21451,8 @@ public inline fun ShortArray.sumByDouble(selector: (Short) -> Double): Double {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun IntArray.sumByDouble(selector: (Int) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21438,6 +21464,8 @@ public inline fun IntArray.sumByDouble(selector: (Int) -> Double): Double {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun LongArray.sumByDouble(selector: (Long) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21449,6 +21477,8 @@ public inline fun LongArray.sumByDouble(selector: (Long) -> Double): Double {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun FloatArray.sumByDouble(selector: (Float) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21460,6 +21490,8 @@ public inline fun FloatArray.sumByDouble(selector: (Float) -> Double): Double {
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun DoubleArray.sumByDouble(selector: (Double) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21471,6 +21503,8 @@ public inline fun DoubleArray.sumByDouble(selector: (Double) -> Double): Double 
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun BooleanArray.sumByDouble(selector: (Boolean) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
@@ -21482,6 +21516,8 @@ public inline fun BooleanArray.sumByDouble(selector: (Boolean) -> Double): Doubl
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the array.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun CharArray.sumByDouble(selector: (Char) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {

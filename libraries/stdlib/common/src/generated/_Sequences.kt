@@ -2271,6 +2271,8 @@ public fun <S, T : S> Sequence<T>.scanReduceIndexed(operation: (index: Int, acc:
  *
  * The operation is _terminal_.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun <T> Sequence<T>.sumBy(selector: (T) -> Int): Int {
     var sum: Int = 0
     for (element in this) {
@@ -2284,6 +2286,8 @@ public inline fun <T> Sequence<T>.sumBy(selector: (T) -> Int): Int {
  *
  * The operation is _terminal_.
  */
+@Deprecated("Use sumOf instead.", ReplaceWith("this.sumOf(selector)"))
+@DeprecatedSinceKotlin(warningSince = "1.5")
 public inline fun <T> Sequence<T>.sumByDouble(selector: (T) -> Double): Double {
     var sum: Double = 0.0
     for (element in this) {
