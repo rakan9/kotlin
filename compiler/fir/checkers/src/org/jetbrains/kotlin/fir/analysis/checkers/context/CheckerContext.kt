@@ -9,7 +9,9 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import org.jetbrains.kotlin.diagnostics.Severity
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnostic
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.expressions.FirGetClassCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccess
@@ -65,6 +67,18 @@ abstract class CheckerContext {
         allWarningsSuppressed: Boolean,
         allErrorsSuppressed: Boolean
     ): PersistentCheckerContext
+
+    fun isDiagnosticSuppressed(diagnostic: FirDiagnostic<*>): Boolean {
+        val factory = diagnostic.factory
+        val name = factory.name
+        val suppressedByAll = when (factory.severity) {
+            Severity.INFO -> allInfosSuppressed
+            Severity.WARNING -> allWarningsSuppressed
+            Severity.ERROR -> allErrorsSuppressed
+        }
+
+        return suppressedByAll || name in suppressedDiagnostics
+    }
 }
 
 class PersistentCheckerContext private constructor(
