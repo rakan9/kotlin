@@ -88,6 +88,8 @@ const char* Konan_DebugGetTypeName(KRef obj);
 RUNTIME_USED RUNTIME_WEAK
 void* Konan_DebugGetOperation(KRef obj, /* Konan_DebugOperation */ int32_t operation);
 
+void Konan_debug_nop() __attribute__((optnone));
+
 #ifdef __cplusplus
 }
 #endif

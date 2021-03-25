@@ -1823,11 +1823,13 @@ internal class CodeGeneratorVisitor(val context: Context, val lifetimes: Map<IrE
     }
 
     //-------------------------------------------------------------------------//
-
     private fun evaluateReturnableBlock(value: IrReturnableBlock): LLVMValueRef {
         context.log{"evaluateReturnableBlock         : ${value.statements.forEach { ir2string(it) }}"}
 
         val returnableBlockScope = ReturnableBlockScope(value)
+        context.llvm.debugNop?.let {
+            (currentCodeContext.functionScope() as? FunctionScope)?.functionGenerationContext?.call(it, emptyList())
+        }
         using(returnableBlockScope) {
             using(VariableScope()) {
                 value.statements.forEach {

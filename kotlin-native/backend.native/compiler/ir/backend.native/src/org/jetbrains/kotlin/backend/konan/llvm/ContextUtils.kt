@@ -506,6 +506,12 @@ internal class Llvm(val context: Context, val llvmModule: LLVMModuleRef) {
     val Kotlin_mm_safePointWhileLoopBody by lazyRtFunction
     val Kotlin_mm_safePointExceptionUnwind by lazyRtFunction
 
+    val debugNop by lazy {
+        context.debugInfo.llvmModule?.let {
+            importFunction("Konan_debug_nop", it)
+        }
+    }
+
     val tlsMode by lazy {
         when (target) {
             KonanTarget.WASM32,

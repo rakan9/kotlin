@@ -298,6 +298,9 @@ RUNTIME_USED RUNTIME_WEAK const char* Konan_DebugGetTypeName(KRef obj) {
   return impl(obj);
 }
 
+void Konan_debug_nop() {
+}
+
 const void* Konan_debugOperationsList[] = {
   nullptr,
   reinterpret_cast<const void*>(&Konan_DebugBufferImpl),
