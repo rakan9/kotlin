@@ -121,7 +121,7 @@ abstract class KGPBaseTest {
     @Retention(AnnotationRetention.RUNTIME)
     annotation class GradleTestVersions(
         val minVersion: String = minSupportedGradleVersion,
-        val maxVersion: String = "7.0-milestone-3",
+        val maxVersion: String = "7.0-rc-1",
         val additionalVersions: Array<String> = []
     )
 
