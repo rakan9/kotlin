@@ -54,7 +54,9 @@ abstract class KGPBaseTest {
         val kotlinVersion: String = KOTLIN_VERSION,
         val warningMode: WarningMode = WarningMode.Fail,
         val configurationCache: Boolean = false,
-        val configurationCacheProblems: BaseGradleIT.ConfigurationCacheProblems = BaseGradleIT.ConfigurationCacheProblems.FAIL
+        val configurationCacheProblems: BaseGradleIT.ConfigurationCacheProblems = BaseGradleIT.ConfigurationCacheProblems.FAIL,
+        val parallel: Boolean = true,
+        val maxWorkers: Int = (Runtime.getRuntime().availableProcessors() / 4 - 1).coerceAtLeast(2),
     ) {
         fun toArguments(
             gradleVersion: GradleVersion
@@ -78,6 +80,12 @@ abstract class KGPBaseTest {
             if (gradleVersion >= GradleVersion.version("6.6.0")) {
                 arguments.add("-Dorg.gradle.unsafe.configuration-cache=$configurationCache")
                 arguments.add("-Dorg.gradle.unsafe.configuration-cache-problems=${configurationCacheProblems.name.toLowerCase()}")
+            }
+            if (parallel) {
+                arguments.add("--parallel")
+                arguments.add("--max-workers=$maxWorkers")
+            } else {
+                arguments.add("--no-parallel")
             }
 
             return arguments.toList()
