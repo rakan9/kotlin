@@ -135,11 +135,16 @@ private fun KtTypeAlias.findFir(firSymbolProvider: FirSymbolProvider): FirTypeAl
 val FirDeclaration.isGeneratedDeclaration
     get() = realPsi == null
 
-internal fun FirDeclaration.collectDesignation(): List<FirDeclaration> {
+fun FirDeclaration.collectDesignation(): List<FirDeclaration> {
     require(this is FirCallableDeclaration<*>)
     val designation = mutableListOf<FirDeclaration>()
     val firProvider = session.firIdeProvider
     var containingClassId = containingClass()?.classId
+
+    require(containingClassId?.isLocal != true) {
+        "$containingClassId is local; local classes do not have stable outerClass information"
+    }
+
     while (containingClassId != null) {
         val klass = firProvider.getFirClassifierByFqName(containingClassId)
         if (klass != null) {
@@ -150,3 +155,26 @@ internal fun FirDeclaration.collectDesignation(): List<FirDeclaration> {
     designation.reverse()
     return designation
 }
+
+//class OuterClass {
+//    fun test() {
+//        abstract class Base {
+//            fun publicFun() {}
+//            protected fun protectedFun() {}
+//            private fun privateFun() {}
+//        }
+//
+//        fun takeBase(b: Base) {
+//            b.publicFun()
+//        }
+//
+//        class SubClass : Base() {
+//            init {
+//                publicFun()
+//                protectedFun()
+//
+//                privateFun()
+//            }
+//        }
+//    }
+//}
