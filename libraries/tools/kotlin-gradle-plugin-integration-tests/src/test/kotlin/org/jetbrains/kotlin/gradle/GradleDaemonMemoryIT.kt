@@ -50,8 +50,8 @@ class GradleDaemonMemoryIT : BaseGradleIT() {
             val usedMemory = (1..BUILD_COUNT).map { buildAndGetMemoryAfterBuild() }
 
             // ensure that the maximum of the used memory established after several first builds doesn't raise significantly in the subsequent builds
-            val establishedMaximum = usedMemory.take(5).max()!!
-            val totalMaximum = usedMemory.max()!!
+            val establishedMaximum = usedMemory.take(5).maxOrNull()!!
+            val totalMaximum = usedMemory.maxOrNull()!!
 
             val maxGrowth = totalMaximum - establishedMaximum
             assertTrue(
