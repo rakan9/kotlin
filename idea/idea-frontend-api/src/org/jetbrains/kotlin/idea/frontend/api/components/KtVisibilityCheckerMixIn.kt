@@ -6,13 +6,13 @@
 package org.jetbrains.kotlin.idea.frontend.api.components
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.idea.frontend.api.symbols.KtCallableSymbol
 import org.jetbrains.kotlin.idea.frontend.api.symbols.KtFileSymbol
+import org.jetbrains.kotlin.idea.frontend.api.symbols.markers.KtSymbolWithVisibility
 import org.jetbrains.kotlin.psi.KtExpression
 
 abstract class KtVisibilityChecker : KtAnalysisSessionComponent() {
     abstract fun isVisible(
-        candidateSymbol: KtCallableSymbol,
+        candidateSymbol: KtSymbolWithVisibility,
         useSiteFile: KtFileSymbol,
         completionPosition: PsiElement,
         receiverExpression: KtExpression?
@@ -22,7 +22,7 @@ abstract class KtVisibilityChecker : KtAnalysisSessionComponent() {
 interface KtVisibilityCheckerMixIn : KtAnalysisSessionMixIn
 
 fun KtVisibilityCheckerMixIn.isVisible(
-    candidateSymbol: KtCallableSymbol,
+    candidateSymbol: KtSymbolWithVisibility,
     useSiteFile: KtFileSymbol,
     receiverExpression: KtExpression? = null,
     completionPosition: PsiElement

@@ -7,8 +7,9 @@ package org.jetbrains.kotlin.idea.frontend.api.fir.components
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.parentsOfType
-import org.jetbrains.kotlin.fir.declarations.FirCallableMemberDeclaration
+import org.jetbrains.kotlin.fir.FirSymbolOwner
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirMemberDeclaration
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.calls.ExpressionReceiverValue
 import org.jetbrains.kotlin.fir.visibilityChecker
@@ -19,10 +20,12 @@ import org.jetbrains.kotlin.idea.frontend.api.components.KtVisibilityChecker
 import org.jetbrains.kotlin.idea.frontend.api.fir.KtFirAnalysisSession
 import org.jetbrains.kotlin.idea.frontend.api.fir.symbols.KtFirFileSymbol
 import org.jetbrains.kotlin.idea.frontend.api.fir.symbols.KtFirSymbol
-import org.jetbrains.kotlin.idea.frontend.api.symbols.KtCallableSymbol
 import org.jetbrains.kotlin.idea.frontend.api.symbols.KtFileSymbol
 import org.jetbrains.kotlin.idea.frontend.api.symbols.markers.KtSymbolWithVisibility
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtCallableDeclaration
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
 internal class KtFirVisibilityChecker(
@@ -31,14 +34,12 @@ internal class KtFirVisibilityChecker(
 ) : KtVisibilityChecker(), KtFirAnalysisSessionComponent {
 
     override fun isVisible(
-        candidateSymbol: KtCallableSymbol,
+        candidateSymbol: KtSymbolWithVisibility,
         useSiteFile: KtFileSymbol,
         completionPosition: PsiElement,
         receiverExpression: KtExpression?
     ): Boolean {
         require(candidateSymbol is KtFirSymbol<*> && useSiteFile is KtFirFileSymbol)
-
-        if (candidateSymbol !is KtSymbolWithVisibility) return true
 
         val nonLocalContainingDeclaration = findContainingNonLocalDeclaration(completionPosition)
 
@@ -53,8 +54,8 @@ internal class KtFirVisibilityChecker(
                 ?.let { ExpressionReceiverValue(it) }
 
             candidateSymbol.firRef.withFir { candidateFirSymbol ->
-                require(candidateFirSymbol is FirCallableMemberDeclaration<*>) {
-                    "$candidateFirSymbol were ${candidateFirSymbol::class}"
+                require(candidateFirSymbol is FirMemberDeclaration && candidateFirSymbol is FirSymbolOwner<*>) {
+                    "$candidateFirSymbol must be a FirMemberDeclaration and FirSymbolOwner; it were ${candidateFirSymbol::class} instead"
                 }
 
                 rootModuleSession.visibilityChecker.isVisible(
