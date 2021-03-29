@@ -47,7 +47,7 @@ interface ClassicTypeSystemContext : TypeSystemInferenceExtensionContext, TypeSy
     override val TypeVariableTypeConstructorMarker.typeParameter: TypeParameterMarker?
         get() {
             require(this is NewTypeVariableConstructor, this::errorMessage)
-            return this.typeParameter
+            return this.originalTypeParameter
         }
 
     override fun SimpleTypeMarker.possibleIntegerTypes(): Collection<KotlinTypeMarker> {

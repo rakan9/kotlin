@@ -104,7 +104,7 @@ private fun TypeConstructor.debugInfo() = buildString {
 }
 
 interface NewTypeVariableConstructor {
-    val typeParameter: TypeParameterDescriptor?
+    val originalTypeParameter: TypeParameterDescriptor?
 }
 
 fun doesTypeParameterFormSelfType(typeParameter: TypeParameterDescriptor, selfConstructor: TypeConstructor) =

@@ -20,8 +20,6 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassifierDescriptor
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.resolve.calls.model.CallableReferenceKotlinCallArgument
-import org.jetbrains.kotlin.resolve.calls.model.LambdaKotlinCallArgument
 import org.jetbrains.kotlin.resolve.calls.model.PostponableKotlinCallArgument
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.descriptorUtil.hasOnlyInputTypesAnnotation
@@ -39,7 +37,7 @@ import org.jetbrains.kotlin.types.refinement.TypeRefinement
 class TypeVariableTypeConstructor(
     private val builtIns: KotlinBuiltIns,
     val debugName: String,
-    override val typeParameter: TypeParameterDescriptor?
+    override val originalTypeParameter: TypeParameterDescriptor?
 ) : TypeConstructor,
     NewTypeVariableConstructor, TypeVariableTypeConstructorMarker {
     override fun getParameters(): List<TypeParameterDescriptor> = emptyList()
@@ -58,8 +56,12 @@ class TypeVariableTypeConstructor(
     var isContainedInInvariantOrContravariantPositions: Boolean = false
 }
 
-sealed class NewTypeVariable(builtIns: KotlinBuiltIns, name: String, typeParameter: TypeParameterDescriptor? = null) : TypeVariableMarker {
-    val freshTypeConstructor = TypeVariableTypeConstructor(builtIns, name, typeParameter)
+sealed class NewTypeVariable(
+    builtIns: KotlinBuiltIns,
+    name: String,
+    originalTypeParameter: TypeParameterDescriptor? = null
+) : TypeVariableMarker {
+    val freshTypeConstructor = TypeVariableTypeConstructor(builtIns, name, originalTypeParameter)
 
     // member scope is used if we have receiver with type TypeVariable(T)
     // todo add to member scope methods from supertypes for type variable

@@ -47,9 +47,11 @@ interface ConeTypeContext : TypeSystemContext, TypeSystemOptimizationContext, Ty
         return classId.isLocal
     }
 
-    // TODO
     override val TypeVariableTypeConstructorMarker.typeParameter: TypeParameterMarker?
-        get() = null
+        get() {
+            require(this is ConeTypeVariableTypeConstructor)
+            return this.originalTypeParameter
+        }
 
     override fun SimpleTypeMarker.possibleIntegerTypes(): Collection<KotlinTypeMarker> {
         return (this as? ConeIntegerLiteralType)?.possibleTypes ?: emptyList()
