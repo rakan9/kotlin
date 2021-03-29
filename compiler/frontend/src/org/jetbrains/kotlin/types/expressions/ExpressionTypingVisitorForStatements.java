@@ -247,9 +247,8 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
         ExpressionTypingContext contextForBinaryOperation = null;
 
         boolean lhsAssignable = basic.checkLValue(ignoreReportsTrace, context, left, right, expression, false);
-        boolean maybeResolvedToPlus = assignmentOperationType == null || lhsAssignable;
 
-        if (maybeResolvedToPlus) {
+        if (assignmentOperationType == null || lhsAssignable) {
             contextForBinaryOperation = context.replaceTraceAndCache(temporaryForBinaryOperation).replaceScope(scope);
             // Check for '+'
             // We should clear calls info for coroutine inference within right side as here we analyze it a second time in another context
@@ -274,14 +273,21 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
 
         boolean oneTypeOfModRemOperations = hasRemAssignOperation == hasRemBinaryOperation;
 
+        boolean maybeAmbiguity = assignmentOperationDescriptors.isSuccess() && binaryOperationDescriptors.isSuccess() && oneTypeOfModRemOperations;
+        boolean isResolvedToPlusAssign = assignmentOperationType != null &&
+                                       (assignmentOperationDescriptors.isSuccess() || !binaryOperationDescriptors.isSuccess()) &&
+                                       (!hasRemBinaryOperation || !binaryOperationDescriptors.isSuccess());
+
         KotlinTypeInfo plusResolutionResult;
-        if (maybeResolvedToPlus) {
+        // We complete resolution for 'plus' only if there may be ambiguity (in this case we can disambiguate it),
+        // or it definitely won't be resolved to plus assign (in this case we would analyse right side twice)
+        if (maybeAmbiguity || !isResolvedToPlusAssign) {
             plusResolutionResult = completePlusResolution(contextForBinaryOperation, expression, binaryOperationType, left, leftInfo);
         } else {
             plusResolutionResult = null;
         }
 
-        if (assignmentOperationDescriptors.isSuccess() && binaryOperationDescriptors.isSuccess() && oneTypeOfModRemOperations && plusResolutionResult != null) {
+        if (maybeAmbiguity && plusResolutionResult != null) {
             // Both 'plus()' and 'plusAssign()' available => ambiguity
             OverloadResolutionResults<FunctionDescriptor> ambiguityResolutionResults = OverloadResolutionResultsUtil.ambiguity(assignmentOperationDescriptors, binaryOperationDescriptors);
             context.trace.report(ASSIGN_OPERATOR_AMBIGUITY.on(operationSign, ambiguityResolutionResults.getResultingCalls()));
@@ -291,9 +297,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
             }
             rightInfo = facade.getTypeInfo(right, context.replaceDataFlowInfo(leftInfo.getDataFlowInfo()));
             context.trace.record(AMBIGUOUS_REFERENCE_TARGET, operationSign, descriptors);
-        } else if (assignmentOperationType != null &&
-                 (assignmentOperationDescriptors.isSuccess() || !binaryOperationDescriptors.isSuccess()) &&
-                 (!hasRemBinaryOperation || !binaryOperationDescriptors.isSuccess())) {
+        } else if (isResolvedToPlusAssign) {
             // There's 'plusAssign()', so we do a.plusAssign(b)
             temporaryForAssignmentOperation.commit();
             if (!KotlinTypeChecker.DEFAULT.equalTypes(components.builtIns.getUnitType(), assignmentOperationType)) {
