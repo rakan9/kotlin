@@ -295,7 +295,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
             for (ResolvedCall<?> resolvedCall : ambiguityResolutionResults.getResultingCalls()) {
                 descriptors.add(resolvedCall.getResultingDescriptor());
             }
-            rightInfo = facade.getTypeInfo(right, context.replaceDataFlowInfo(leftInfo.getDataFlowInfo()));
+            rightInfo = plusResolutionResult;
             context.trace.record(AMBIGUOUS_REFERENCE_TARGET, operationSign, descriptors);
         } else if (isResolvedToPlusAssign) {
             // There's 'plusAssign()', so we do a.plusAssign(b)
