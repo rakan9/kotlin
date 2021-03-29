@@ -278,16 +278,16 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
                                        (assignmentOperationDescriptors.isSuccess() || !binaryOperationDescriptors.isSuccess()) &&
                                        (!hasRemBinaryOperation || !binaryOperationDescriptors.isSuccess());
 
-        KotlinTypeInfo plusResolutionResult;
+        KotlinTypeInfo rhsResolutionResult;
         // We complete resolution for 'plus' only if there may be ambiguity (in this case we can disambiguate it),
         // or it definitely won't be resolved to plus assign (in this case we would analyse right side twice)
         if (maybeAmbiguity || !isResolvedToPlusAssign) {
-            plusResolutionResult = completePlusResolution(contextForBinaryOperation, expression, binaryOperationType, left, leftInfo);
+            rhsResolutionResult = completePlusResolution(contextForBinaryOperation, expression, binaryOperationType, left, leftInfo);
         } else {
-            plusResolutionResult = null;
+            rhsResolutionResult = null;
         }
 
-        if (maybeAmbiguity && plusResolutionResult != null) {
+        if (maybeAmbiguity && rhsResolutionResult != null) {
             // Both 'plus()' and 'plusAssign()' available => ambiguity
             OverloadResolutionResults<FunctionDescriptor> ambiguityResolutionResults = OverloadResolutionResultsUtil.ambiguity(assignmentOperationDescriptors, binaryOperationDescriptors);
             context.trace.report(ASSIGN_OPERATOR_AMBIGUITY.on(operationSign, ambiguityResolutionResults.getResultingCalls()));
@@ -295,7 +295,7 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
             for (ResolvedCall<?> resolvedCall : ambiguityResolutionResults.getResultingCalls()) {
                 descriptors.add(resolvedCall.getResultingDescriptor());
             }
-            rightInfo = plusResolutionResult;
+            rightInfo = rhsResolutionResult;
             context.trace.record(AMBIGUOUS_REFERENCE_TARGET, operationSign, descriptors);
         } else if (isResolvedToPlusAssign) {
             // There's 'plusAssign()', so we do a.plusAssign(b)
@@ -304,8 +304,8 @@ public class ExpressionTypingVisitorForStatements extends ExpressionTypingVisito
                 context.trace.report(ASSIGNMENT_OPERATOR_SHOULD_RETURN_UNIT.on(operationSign, assignmentOperationDescriptors.getResultingDescriptor(), operationSign));
             }
         } else {
-            if (plusResolutionResult != null) {
-                rightInfo = plusResolutionResult;
+            if (rhsResolutionResult != null) {
+                rightInfo = rhsResolutionResult;
             }
             // There's only 'plus()', so we try 'a = a + b'
             temporaryForBinaryOperation.commit();
