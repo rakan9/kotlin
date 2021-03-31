@@ -51,7 +51,7 @@ enum class PositioningStrategy(private val strategy: String? = null) {
     COMPANION_OBJECT,
     CONST_MODIFIER,
     ARRAY_ACCESS,
-    RETURN_KEYWORD,
+    RETURN_WITH_LABEL,
 
     ;
 
