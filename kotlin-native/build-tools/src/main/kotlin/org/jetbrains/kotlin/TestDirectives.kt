@@ -32,13 +32,7 @@ fun buildCompileList(source: Path, outputDirectory: String): List<TestFile> {
     // Remove diagnostic parameters in external tests.
     val srcText = srcFile.readText().replace(Regex("<!.*?!>(.*?)<!>")) { match -> match.groupValues[1] }
 
-    var supportModule: TestModule? = null
-    if (srcText.contains("// WITH_COROUTINES")) {
-        supportModule = TestModule.support()
-        result.add(TestFile("helpers.kt", "$outputDirectory/helpers.kt",
-                createTextForHelpers(true), supportModule))
-    }
-
+    val supportModule = srcText.contains("// WITH_COROUTINES")
     val defaultModule = TestModule.default()
     val moduleMatcher = MODULE_PATTERN.matcher(srcText)
     val fileMatcher = FILE_PATTERN.matcher(srcText)
@@ -63,7 +57,7 @@ fun buildCompileList(source: Path, outputDirectory: String): List<TestFile> {
                     moduleName = moduleName.trim { it <= ' ' }
                     val dependencies = mutableListOf<String>().apply {
                         addAll(moduleDependencies.parseModuleList())
-                        if (supportModule != null && !contains("support")) {
+                        if (supportModule && !contains("support")) {
                             add("support")
                         }
                     }.map {
@@ -96,6 +90,12 @@ fun buildCompileList(source: Path, outputDirectory: String): List<TestFile> {
         }
     }
     return result
+}
+
+fun createSupportFile(outputDirectory: String): TestFile {
+    val supportModule = TestModule.support()
+    return TestFile("helpers.kt", "$outputDirectory/helpers.kt",
+            createTextForHelpers(true), supportModule)
 }
 
 private fun String?.parseModuleList() = this

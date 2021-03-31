@@ -517,6 +517,10 @@ fun runTest() {
                     compileList.addAll(createTestFiles(src))
                 }
             }
+            // Create support module
+            if (compileList.collectMany { it.module.dependencies }.any { it == "support" }) {
+                compileList.add(TestDirectivesKt.createSupportFile(outputDirectory))
+            }
             compileList*.writeTextToFile()
             try {
                 if (enableTwoStageCompilation) {

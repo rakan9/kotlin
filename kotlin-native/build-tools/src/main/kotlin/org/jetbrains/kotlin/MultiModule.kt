@@ -61,7 +61,7 @@ class MultiModuleCompilerInvocations(
 
     fun produceProgram(compileList: List<TestFile>) {
         val compileMain = compileList.filter {
-            it.module.isDefaultModule() || it.module.isSupportModule()
+            it.module.isDefaultModule()
         }
         compileMain.forEach { f ->
             libs.addAll(f.module.dependencies)
