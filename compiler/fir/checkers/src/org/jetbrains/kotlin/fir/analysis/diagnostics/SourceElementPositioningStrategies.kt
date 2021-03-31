@@ -107,7 +107,7 @@ object SourceElementPositioningStrategies {
         LightTreePositioningStrategies.OPERATOR,
         PositioningStrategies.OPERATOR
     )
-    
+
     val PARAMETER_DEFAULT_VALUE = SourceElementPositioningStrategy(
         LightTreePositioningStrategies.PARAMETER_DEFAULT_VALUE,
         PositioningStrategies.PARAMETER_DEFAULT_VALUE
@@ -151,5 +151,10 @@ object SourceElementPositioningStrategies {
     val ARRAY_ACCESS = SourceElementPositioningStrategy(
         LightTreePositioningStrategies.ARRAY_ACCESS,
         PositioningStrategies.ARRAY_ACCESS
+    )
+
+    val RETURN_KEYWORD = SourceElementPositioningStrategy(
+        LightTreePositioningStrategies.RETURN_KEYWORD,
+        PositioningStrategies.RETURN_KEYWORD
     )
 }
