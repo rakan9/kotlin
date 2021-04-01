@@ -95,6 +95,10 @@ class ExpressionCheckersDiagnosticComponent(
         checkers.variableAssignmentCheckers.check(variableAssignment, data, reporter)
     }
 
+    override fun visitReturnExpression(returnExpression: FirReturnExpression, data: CheckerContext) {
+        checkers.returnExpressionCheckers.check(returnExpression, data, reporter)
+    }
+
     private fun <E : FirStatement> Collection<FirExpressionChecker<E>>.check(
         expression: E,
         context: CheckerContext,
