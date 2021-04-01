@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.kotlinSourceSetsIncludingDefault
 import org.jetbrains.kotlin.gradle.plugin.sources.resolveAllDependsOnSourceSets
 import org.jetbrains.kotlin.gradle.targets.native.internal.CInteropCommonizerTask.CInteropGist
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import org.jetbrains.kotlin.gradle.utils.fileProvider
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 
@@ -179,7 +180,7 @@ private fun CInteropProcess.toGist(): CInteropGist {
         konanTarget = konanTarget,
         sourceSets = project.provider { settings.compilation.kotlinSourceSetsIncludingDefault },
         libraryFile = outputFileProvider,
-        dependencies = project.files(project.provider { settings.dependencyFiles })
+        dependencies = project.fileProvider { settings.dependencyFiles }.filter(File::isValidDependency)
     )
 }
 
@@ -242,4 +243,8 @@ private fun Project.getDependingNativeCompilations(compilation: KotlinSharedNati
         .filterIsInstance<KotlinNativeCompilation>()
         .filter { nativeCompilation -> nativeCompilation.allParticipatingSourceSets().containsAll(allParticipatingSourceSetsOfCompilation) }
         .toSet()
+}
+
+private fun File.isValidDependency(): Boolean {
+    return this.exists() && (this.isDirectory || this.extension == "klib")
 }
