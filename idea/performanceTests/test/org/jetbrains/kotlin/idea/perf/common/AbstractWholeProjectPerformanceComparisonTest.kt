@@ -17,7 +17,7 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
         PERFORMANCE_TEST
     }
 
-    val mode = Mode.INTEGRATION_TEST
+    val mode = Mode.PERFORMANCE_TEST
 
     abstract val testPrefix: String
 
