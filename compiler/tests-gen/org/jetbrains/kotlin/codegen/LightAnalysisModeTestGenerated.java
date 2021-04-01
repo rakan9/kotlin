@@ -8125,11 +8125,6 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
             @TestDataPath("$PROJECT_ROOT")
             @RunWith(JUnit3RunnerWithInners.class)
             public static class Resume extends AbstractLightAnalysisModeTest {
-                @TestMetadata("boxTypeParameterOfSuperTypeResult.kt")
-                public void ignoreBoxTypeParameterOfSuperTypeResult() throws Exception {
-                    runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resume/boxTypeParameterOfSuperTypeResult.kt");
-                }
-
                 private void runTest(String testDataFilePath) throws Exception {
                     KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
                 }
@@ -8151,6 +8146,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
                 @TestMetadata("boxTypeParameterOfSuperType.kt")
                 public void testBoxTypeParameterOfSuperType() throws Exception {
                     runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resume/boxTypeParameterOfSuperType.kt");
+                }
+
+                @TestMetadata("boxTypeParameterOfSuperTypeResult.kt")
+                public void testBoxTypeParameterOfSuperTypeResult() throws Exception {
+                    runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resume/boxTypeParameterOfSuperTypeResult.kt");
                 }
 
                 @TestMetadata("boxUnboxInsideCoroutine.kt")
@@ -8363,11 +8363,6 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
             @TestDataPath("$PROJECT_ROOT")
             @RunWith(JUnit3RunnerWithInners.class)
             public static class ResumeWithException extends AbstractLightAnalysisModeTest {
-                @TestMetadata("boxTypeParameterOfSuperTypeResult.kt")
-                public void ignoreBoxTypeParameterOfSuperTypeResult() throws Exception {
-                    runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resumeWithException/boxTypeParameterOfSuperTypeResult.kt");
-                }
-
                 private void runTest(String testDataFilePath) throws Exception {
                     KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
                 }
@@ -8389,6 +8384,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
                 @TestMetadata("boxTypeParameterOfSuperType.kt")
                 public void testBoxTypeParameterOfSuperType() throws Exception {
                     runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resumeWithException/boxTypeParameterOfSuperType.kt");
+                }
+
+                @TestMetadata("boxTypeParameterOfSuperTypeResult.kt")
+                public void testBoxTypeParameterOfSuperTypeResult() throws Exception {
+                    runTest("compiler/testData/codegen/box/coroutines/inlineClasses/resumeWithException/boxTypeParameterOfSuperTypeResult.kt");
                 }
 
                 @TestMetadata("boxUnboxInsideCoroutine.kt")
@@ -19769,6 +19769,26 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
 
         public void testAllFilesPresentInJvmPackageName() throws Exception {
             KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/codegen/box/jvmPackageName"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM, true);
+        }
+
+        @TestMetadata("anonymousObject.kt")
+        public void testAnonymousObject() throws Exception {
+            runTest("compiler/testData/codegen/box/jvmPackageName/anonymousObject.kt");
+        }
+
+        @TestMetadata("anonymousObjectInInheritedMultifilePart.kt")
+        public void testAnonymousObjectInInheritedMultifilePart() throws Exception {
+            runTest("compiler/testData/codegen/box/jvmPackageName/anonymousObjectInInheritedMultifilePart.kt");
+        }
+
+        @TestMetadata("anonymousObjectInMultifilePart.kt")
+        public void testAnonymousObjectInMultifilePart() throws Exception {
+            runTest("compiler/testData/codegen/box/jvmPackageName/anonymousObjectInMultifilePart.kt");
+        }
+
+        @TestMetadata("localClass.kt")
+        public void testLocalClass() throws Exception {
+            runTest("compiler/testData/codegen/box/jvmPackageName/localClass.kt");
         }
 
         @TestMetadata("metadataField.kt")
