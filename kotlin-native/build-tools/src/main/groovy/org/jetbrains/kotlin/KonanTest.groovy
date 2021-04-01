@@ -265,7 +265,7 @@ class RunExternalTestGroup extends JavaExec implements CompilerRunner {
         return text
     }
 
-    List<TestFile> createTestFiles(String src) {
+    List<TestFile> createTestFiles(String src, TestModule defaultModule) {
         def identifier = /[a-zA-Z_][a-zA-Z0-9_]/
         def fullQualified = /[a-zA-Z_][a-zA-Z0-9_.]/
         def importRegex = /(?m)^\s*import\s+/
@@ -274,13 +274,18 @@ class RunExternalTestGroup extends JavaExec implements CompilerRunner {
         def boxPattern = ~/(?m)fun\s+box\s*\(\s*\)/
         def classPattern = ~/.*(class|object|enum|interface)\s+(${identifier}*).*/
 
-        def sourceName = "_" + normalize(project.rootProject.file(src).name)
+        def srcName = project.rootProject.file(src).name
+        def sourceName = "_" + normalize(srcName)
         def packages = new LinkedHashSet<String>()
         def imports = []
         def classes = []
         def vars = new HashSet<String>()  // variables that has the same name as a package
-        TestModule mainModule = null
-        def testFiles = TestDirectivesKt.buildCompileList(project.rootProject.file(src).toPath(), "$outputDirectory/${project.rootProject.file(src).name}")
+        TestModule mainModule = defaultModule
+        def testFiles = TestDirectivesKt.buildCompileList(
+                project.rootProject.file(src).toPath(),
+                "$outputDirectory/$srcName",
+                defaultModule
+        )
         for (TestFile testFile : testFiles) {
             def text = testFile.text
             def filePath = testFile.path
@@ -305,7 +310,7 @@ class RunExternalTestGroup extends JavaExec implements CompilerRunner {
             }
 
             // Find mutable objects that should be marked as ThreadLocal
-            if (filePath != "$outputDirectory/${project.rootProject.file(src).name}/helpers.kt") {
+            if (filePath != "$outputDirectory/${srcName}/helpers.kt") {
                 text = markMutableObjects(text)
             }
             testFile.text = text
@@ -378,10 +383,9 @@ class RunExternalTestGroup extends JavaExec implements CompilerRunner {
         testFiles.add(
                 new TestFile(
                         "_launcher.kt",
-                        "$outputDirectory/$src/_launcher.kt".toString(),
+                        "$outputDirectory/$srcName/_launcher.kt".toString(),
                         launcherText,
-                        mainModule ?: testFiles.collect { it.module }.find { it.isDefaultModule() }
-                                ?: TestModule.default()
+                        mainModule ?: defaultModule
                 )
         )
         return testFiles
@@ -509,12 +513,13 @@ fun runTest() {
             // Build tests in the group
             flags = (flags ?: []) + "-tr"
             List<TestFile> compileList = []
+            def defaultModule = TestModule.default()
             ktFiles.each {
                 def src = project.rootProject.relativePath(it)
                 if (isEnabledForNativeBackend(src)) {
                     // Create separate output directory for each test in the group.
                     parseLanguageFlags(src)
-                    compileList.addAll(createTestFiles(src))
+                    compileList.addAll(createTestFiles(src, defaultModule))
                 }
             }
             // Create support module

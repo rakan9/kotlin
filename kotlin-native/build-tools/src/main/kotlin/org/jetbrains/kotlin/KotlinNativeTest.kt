@@ -350,7 +350,7 @@ open class KonanStandaloneTest : KonanLocalTest() {
         }
 
     fun getSources(): Provider<List<String>> = project.provider {
-        val sources = buildCompileList(project.file(source).toPath(), outputDirectory)
+        val sources = buildCompileList(project.file(source).toPath(), outputDirectory, TestModule.default())
         sources.forEach { it.writeTextToFile() }
         sources.map { it.path }
     }
