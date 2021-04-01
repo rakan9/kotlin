@@ -95,6 +95,10 @@ class FirStatusResolveTransformer(
         return true
     }
 
+    override fun FirDeclaration.needUpdateResolvePhase(): Boolean {
+        return true
+    }
+
     override fun transformRegularClass(
         regularClass: FirRegularClass,
         data: FirResolvedDeclarationStatus?
@@ -110,6 +114,13 @@ class FirStatusResolveTransformer(
         return transformClass(regularClass, data).also {
             statusComputationSession.endComputing(regularClass)
         }
+    }
+}
+
+private fun checkIsStatusResolved(declaration: FirDeclaration) {
+    if (declaration !is FirMemberDeclaration) return
+    check(declaration.status is FirResolvedDeclarationStatus) {
+        "Expected FirResolvedDeclarationStatus for ${declaration::class.simpleName.toString()} but was`${declaration.status::class.simpleName}\n\n${declaration.render()}"
     }
 }
 
@@ -152,6 +163,10 @@ private class FirDesignatedStatusResolveTransformer(
 
     override fun FirDeclaration.needResolveNestedClassifiers(): Boolean {
         return !classLocated
+    }
+
+    override fun FirDeclaration.needUpdateResolvePhase(): Boolean {
+        return classLocated
     }
 
     override fun transformRegularClass(
@@ -238,6 +253,7 @@ abstract class AbstractFirStatusResolveTransformer(
 
     protected abstract fun FirDeclaration.needResolveMembers(): Boolean
     protected abstract fun FirDeclaration.needResolveNestedClassifiers(): Boolean
+    protected abstract fun FirDeclaration.needUpdateResolvePhase(): Boolean
 
     override fun transformFile(file: FirFile, data: FirResolvedDeclarationStatus?): CompositeTransformResult<FirFile> {
         file.replaceResolvePhase(transformerPhase)
@@ -326,7 +342,9 @@ abstract class AbstractFirStatusResolveTransformer(
     ): CompositeTransformResult<FirStatement> {
         return storeClass(klass) {
             klass.typeParameters.forEach { it.transformSingle(this, data) }
-            klass.replaceResolvePhase(transformerPhase)
+            if (klass.needUpdateResolvePhase()) {
+                klass.replaceResolvePhase(transformerPhase)
+            }
             if (klass.needResolveMembers()) {
                 val members = klass.declarations.filter { it !is FirClassLikeDeclaration<*> }
                 members.forEach { it.replaceResolvePhase(transformerPhase) }
