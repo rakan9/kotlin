@@ -244,6 +244,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         typeAfterMarker: Boolean = true,
         revertChangesAtTheEnd: Boolean = true,
         note: String = "",
+        warmUpIterations: Int = 8,
+        iterations: Int = 15,
         stopAtException: Boolean = false,
     ) = perfTypeAndAutocomplete(
         project = project(),
@@ -257,6 +259,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         typeAfterMarker = typeAfterMarker,
         revertChangesAtTheEnd = revertChangesAtTheEnd,
         note = note,
+        warmUpIterations =  warmUpIterations,
+        iterations = iterations,
         stopAtException = stopAtException,
     )
 
@@ -272,6 +276,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         typeAfterMarker: Boolean = true,
         revertChangesAtTheEnd: Boolean = true,
         note: String = "",
+        warmUpIterations: Int = 8,
+        iterations: Int = 15,
         stopAtException: Boolean = false,
     ) {
         assertTrue("lookupElements has to be not empty", lookupElements.isNotEmpty())
@@ -297,9 +303,11 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
             tearDownCheck = { fixture, value: Array<LookupElement>? ->
                 val items = value?.map { e -> e.lookupString }?.toList() ?: emptyList()
                 for (lookupElement in lookupElements) {
-                    assertTrue("'$lookupElement' has to be present in items $items", items.contains(lookupElement))
+//                    assertTrue("'$lookupElement' has to be present in items $items", items.contains(lookupElement))
                 }
             },
+            warmUpIterations = warmUpIterations,
+            iterations = iterations,
             revertChangesAtTheEnd = revertChangesAtTheEnd,
             stopAtException = stopAtException,
         )
@@ -314,6 +322,7 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         surroundItems: String = "\n",
         typeAfterMarker: Boolean = true,
         revertChangesAtTheEnd: Boolean = true,
+        iterations: Int = 15,
         note: String = ""
     ) {
         var fileText: String? = null
@@ -339,7 +348,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
                 val text = fixture.document.text
                 assert(fileText != text) { "undo has to change document text\nbefore undo:\n$fileText\n\nafter undo:\n$text" }
             },
-            revertChangesAtTheEnd = revertChangesAtTheEnd
+            revertChangesAtTheEnd = revertChangesAtTheEnd,
+            iterations = iterations,
         )
     }
 
@@ -358,6 +368,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         testBlock: (Fixture) -> V,
         tearDownCheck: (Fixture, V?) -> Unit,
         revertChangesAtTheEnd: Boolean,
+        warmUpIterations: Int = 8,
+        iterations: Int,
         stopAtException: Boolean = false,
     ) {
         openFixture(project, fileName).use { fixture ->
@@ -369,8 +381,8 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
             performanceTest<Unit, V> {
                 name("$typeTestPrefix ${notePrefix(note)}$fileName")
                 stats(stats)
-                warmUpIterations(8)
-                iterations(15)
+                warmUpIterations(warmUpIterations)
+                iterations(iterations)
                 profilerConfig.enabled = true
                 setUp {
                     val markerOffset = editor.document.text.indexOf(marker)
@@ -589,8 +601,21 @@ abstract class AbstractPerformanceProjectsTest : UsefulTestCase() {
         note: String = ""
     ): List<HighlightInfo> = perfHighlightFile(project(), name, stats, tools = tools, note = note)
 
-    protected fun perfHighlightFileEmptyProfile(name: String, stats: Stats, stopAtException: Boolean = false): List<HighlightInfo> =
-        perfHighlightFile(project(), name, stats, tools = emptyArray(), note = "empty profile", stopAtException = stopAtException)
+    protected fun perfHighlightFileEmptyProfile(
+        name: String,
+        stats: Stats,
+        iterations: Int = 10,
+        stopAtException: Boolean = false
+    ): List<HighlightInfo> =
+        perfHighlightFile(
+            project(),
+            name,
+            stats,
+            tools = emptyArray(),
+            note = "empty profile",
+            iterations = iterations,
+            stopAtException = stopAtException
+        )
 
     protected fun perfHighlightFile(
         project: Project,

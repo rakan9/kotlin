@@ -12,6 +12,13 @@ import org.jetbrains.kotlin.idea.perf.util.TeamCity
 import org.jetbrains.kotlin.idea.testFramework.ProjectOpenAction
 
 abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerformanceProjectsTest() {
+    enum class Mode {
+        INTEGRATION_TEST,
+        PERFORMANCE_TEST
+    }
+
+    val mode = Mode.INTEGRATION_TEST
+
     abstract val testPrefix: String
 
     abstract fun getWarmUpProject(): WarmUpProject
@@ -22,6 +29,10 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
     }
 
     protected fun doTestRustPluginHighlighting() {
+        val (iterations, warmUpIterations) = when (mode) {
+            Mode.PERFORMANCE_TEST -> 15 to 8
+            Mode.INTEGRATION_TEST -> 1 to 0
+        }
         TeamCity.suite("$testPrefix highlighting in Rust plugin") {
             Stats("$testPrefix highlighting in Rust plugin").use { stat ->
                 perfOpenRustPluginProject(stat)
@@ -35,12 +46,23 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
                     FILE_NAMES.NAME_RESOLUTION
                 )
 
-                filesToHighlight.forEach { file -> perfHighlightFileEmptyProfile(file, stats = stat, stopAtException = true) }
+                filesToHighlight.forEach { file ->
+                    perfHighlightFileEmptyProfile(
+                        file,
+                        stats = stat,
+                        stopAtException = true,
+                        iterations = iterations
+                    )
+                }
             }
         }
     }
 
     protected fun doTestRustPluginCompletion() {
+        val (iterations, warmUpIterations) = when (mode) {
+            Mode.PERFORMANCE_TEST -> 15 to 8
+            Mode.INTEGRATION_TEST -> 1 to 0
+        }
         TeamCity.suite("$testPrefix completion in Rust plugin") {
             Stats("$testPrefix completion in Rust plugin").use { stat ->
                 perfOpenRustPluginProject(stat)
@@ -53,6 +75,8 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
                     highlightFileBeforeStartTyping = true,
                     lookupElements = listOf("line"),
                     note = "in-method completion",
+                    warmUpIterations = warmUpIterations,
+                    iterations = iterations,
                     stopAtException = true,
                 )
 
@@ -64,6 +88,8 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
                     highlightFileBeforeStartTyping = true,
                     lookupElements = listOf("processAssocTypeVariants"),
                     note = "top-level completion",
+                    warmUpIterations = warmUpIterations,
+                    iterations = iterations,
                     stopAtException = true,
                 )
 
@@ -75,6 +101,8 @@ abstract class AbstractWholeProjectPerformanceComparisonTest : AbstractPerforman
                     insertString = "\nval a = s",
                     lookupElements = listOf("scope"),
                     note = "in big method in big file completion",
+                    warmUpIterations = warmUpIterations,
+                    iterations = iterations,
                     stopAtException = true,
                 )
             }
