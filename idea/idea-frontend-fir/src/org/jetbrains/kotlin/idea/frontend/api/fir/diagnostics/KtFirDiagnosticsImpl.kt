@@ -10,6 +10,7 @@ import com.intellij.psi.PsiTypeElement
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.contracts.description.EventOccurrencesRange
+import org.jetbrains.kotlin.descriptors.EffectiveVisibility
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.diagnostics.WhenMissingCase
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirPsiDiagnostic
@@ -505,9 +506,9 @@ internal class VarAnnotationParameterImpl(
 }
 
 internal class ExposedTypealiasExpandedTypeImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedTypealiasExpandedType(), KtAbstractFirDiagnostic<KtNamedDeclaration> {
@@ -515,9 +516,9 @@ internal class ExposedTypealiasExpandedTypeImpl(
 }
 
 internal class ExposedFunctionReturnTypeImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedFunctionReturnType(), KtAbstractFirDiagnostic<KtNamedDeclaration> {
@@ -525,9 +526,9 @@ internal class ExposedFunctionReturnTypeImpl(
 }
 
 internal class ExposedReceiverTypeImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedReceiverType(), KtAbstractFirDiagnostic<KtTypeReference> {
@@ -535,9 +536,9 @@ internal class ExposedReceiverTypeImpl(
 }
 
 internal class ExposedPropertyTypeImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedPropertyType(), KtAbstractFirDiagnostic<KtNamedDeclaration> {
@@ -545,9 +546,9 @@ internal class ExposedPropertyTypeImpl(
 }
 
 internal class ExposedPropertyTypeInConstructorImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedPropertyTypeInConstructor(), KtAbstractFirDiagnostic<KtNamedDeclaration> {
@@ -555,9 +556,9 @@ internal class ExposedPropertyTypeInConstructorImpl(
 }
 
 internal class ExposedParameterTypeImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedParameterType(), KtAbstractFirDiagnostic<KtParameter> {
@@ -565,9 +566,9 @@ internal class ExposedParameterTypeImpl(
 }
 
 internal class ExposedSuperInterfaceImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedSuperInterface(), KtAbstractFirDiagnostic<KtTypeReference> {
@@ -575,9 +576,9 @@ internal class ExposedSuperInterfaceImpl(
 }
 
 internal class ExposedSuperClassImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedSuperClass(), KtAbstractFirDiagnostic<KtTypeReference> {
@@ -585,9 +586,9 @@ internal class ExposedSuperClassImpl(
 }
 
 internal class ExposedTypeParameterBoundImpl(
-    override val elementVisibility: Visibility,
+    override val elementVisibility: EffectiveVisibility,
     override val restrictingDeclaration: KtSymbol,
-    override val restrictingVisibility: Visibility,
+    override val restrictingVisibility: EffectiveVisibility,
     firDiagnostic: FirPsiDiagnostic<*>,
     override val token: ValidityToken,
 ) : KtFirDiagnostic.ExposedTypeParameterBound(), KtAbstractFirDiagnostic<KtTypeReference> {
