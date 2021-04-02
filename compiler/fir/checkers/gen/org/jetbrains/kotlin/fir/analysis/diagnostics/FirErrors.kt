@@ -181,7 +181,7 @@ object FirErrors {
     val NAMED_ARGUMENTS_NOT_ALLOWED by error1<FirSourceElement, PsiElement, ForbiddenNamedArgumentsTarget>()
 
     // Ambiguity
-    val AMBIGUITY by error1<FirSourceElement, PsiElement, Collection<AbstractFirBasedSymbol<*>>>(SourceElementPositioningStrategies.REFERENCE_BY_QUALIFIED)
+    val OVERLOAD_RESOLUTION_AMBIGUITY by error1<FirSourceElement, PsiElement, Collection<AbstractFirBasedSymbol<*>>>(SourceElementPositioningStrategies.REFERENCE_BY_QUALIFIED)
     val ASSIGN_OPERATOR_AMBIGUITY by error1<FirSourceElement, PsiElement, Collection<AbstractFirBasedSymbol<*>>>()
 
     // Types & type parameters
